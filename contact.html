@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SLOWLY - ติดต่อเรา</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Custom Styles and Variables */
+        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;700;800&display=swap');
+        
+        :root {
+            --primary: #000;
+            --secondary: #d90000; /* Red color for accents/sales */
+            --dark-bg: #1a1a1a;
+            --light-bg: #2a2a2a;
+        }
+
+        /* Applying Kanit font globally */
+        body {
+            font-family: 'Kanit', sans-serif;
+            background-color: var(--primary);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Custom utility classes */
+        .bg-primary { background-color: var(--primary); }
+        .bg-dark { background-color: var(--dark-bg); }
+        .bg-light { background-color: var(--light-bg); }
+        .text-secondary { color: var(--secondary); }
+        .bg-secondary { background-color: var(--secondary); }
+        
+        /* Highlight active navigation link: 'ติดต่อเรา' */
+        .nav-link[href="contact.html"] {
+            color: var(--secondary);
+            border-bottom: 3px solid var(--secondary);
+            padding-bottom: 0.25rem;
+        }
+        
+        /* New Design: Hero Section Background with Overlay */
+        .contact-hero {
+            /* Placeholder image for a modern office/tech background */
+            background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.9)), url('https://images.unsplash.com/photo-1549490349-f643442b10a2?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'); 
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed; 
+            padding-top: 5rem;
+            padding-bottom: 5rem;
+        }
+        
+        /* New Design: Icon Box Style */
+        .info-box {
+            background-color: var(--dark-bg);
+            border-bottom: 5px solid var(--secondary);
+            transition: all 0.3s ease;
+        }
+        .info-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(217, 0, 0, 0.3);
+        }
+        .info-icon {
+            text-shadow: 0 0 10px rgba(217, 0, 0, 0.8);
+        }
+
+        /* Custom height for map container on mobile */
+        .map-container-height {
+            height: 400px;
+        }
+
+        /* Ensure map takes full available height on desktop/lg screens */
+        @media (min-width: 1024px) { 
+            .map-container-height {
+                min-height: 550px; 
+                height: 100%;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Sticky Header -->
+    <div class="sticky top-0 z-30 shadow-2xl">
+        <header class="bg-primary">
+            <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+                
+                <div class="text-4xl font-extrabold" style="font-family: serif; letter-spacing: 1px;">
+                    <a href="index.html" class="text-white">SLOWLY</a>
+                </div>
+                
+                <div class="flex-grow max-w-xl mx-8 relative hidden md:block">
+                    <input type="text" id="searchInput" placeholder="ค้นหาสินค้า" class="w-full py-2 pl-6 pr-12 bg-light text-white rounded-full border border-[#444] focus:border-secondary focus:ring focus:ring-secondary/50 transition" onkeypress="if(event.key === 'Enter') performGlobalSearch()">
+                    <button onclick="performGlobalSearch()" class="absolute right-0 top-1/2 transform -translate-y-1/2 mr-3 text-secondary hover:text-white transition">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+                <nav>
+                    <ul class="flex space-x-6 text-lg">
+                         <li>
+                            <a href="cart.html" class="text-white hover:text-secondary transition relative p-2">
+                                <i class="fas fa-shopping-cart mr-2"></i> ตะกร้า
+                                <span id="cart-count" class="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-secondary rounded-full" style="display: none;">0</span>
+                            </a>
+                            <a href="#" class="text-white hover:text-secondary transition relative p-2">
+                                <i class="fas fa-user-circle mr-2"></i> ล็อกอิน
+                                </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+        <nav class="bg-gray-900 border-t border-b-2 border-light-bg">
+            <div class="container mx-auto px-4">
+                <ul class="flex justify-center space-x-4 sm:space-x-10 py-3 font-semibold text-lg overflow-x-auto whitespace-nowrap">
+                    <li><a href="index.html" class="nav-link text-white hover:text-secondary transition">สินค้าหลัก</a></li>
+                    <li><a href="set_pc.html" class="nav-link text-white hover:text-secondary transition">คอมเซ็ต</a></li>
+                    <li><a href="promo.html" class="nav-link text-white hover:text-secondary transition">โปรโมชั่น</a></li>
+                    <li><a href="build_pc.html" class="nav-link text-white hover:text-secondary transition">จัดสเปคคอม</a></li>
+                    <li><a href="contact.html" class="nav-link text-white hover:text-secondary transition">ติดต่อเรา</a></li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+    <main class="flex-grow">
+        
+        <!-- Hero Section -->
+        <section class="contact-hero text-center mb-16">
+            <div class="container mx-auto px-4">
+                <h1 class="text-5xl md:text-8xl font-extrabold text-white mb-4 uppercase tracking-widest leading-tight">
+                    ติดต่อเรา
+                </h1>
+                <p class="text-lg md:text-2xl text-gray-300 font-light max-w-3xl mx-auto">
+                    เราพร้อมให้คำปรึกษาและตอบทุกข้อสงสัยเกี่ยวกับสินค้าและบริการของเรา
+                </p>
+                <div class="mt-8">
+                    <a href="#contact-form-section" class="bg-secondary text-white font-bold py-3 px-8 rounded-full text-lg hover:bg-red-700 transition duration-300 shadow-xl shadow-secondary/50">
+                        ส่งข้อความ <i class="fas fa-arrow-down ml-2"></i>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Info Boxes Section -->
+        <section class="container mx-auto px-4 py-8 -mt-24 z-10 relative">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                
+                <div class="info-box p-8 rounded-xl shadow-2xl">
+                    <div class="text-center">
+                        <i class="fas fa-map-marker-alt text-6xl text-secondary mb-4 info-icon"></i>
+                        <h3 class="text-2xl font-bold mb-2">ที่ตั้งสำนักงาน</h3>
+                        <p class="text-lg text-gray-300">วิทยาลัยเทคนิคยะลา</p>
+                    </div>
+                </div>
+                
+                <div class="info-box p-8 rounded-xl shadow-2xl">
+                    <div class="text-center">
+                        <i class="fas fa-headset text-6xl text-secondary mb-4 info-icon"></i>
+                        <h3 class="text-2xl font-bold mb-2">โทรศัพท์และเวลาทำการ</h3>
+                        <p class="text-lg text-gray-300">**โทร:** 099-999-9999</p>
+                        <p class="text-base text-gray-400 mt-2">จันทร์ - ศุกร์ | 09:00 - 18:00 น.</p>
+                    </div>
+                </div>
+                
+                <div class="info-box p-8 rounded-xl shadow-2xl">
+                    <div class="text-center">
+                        <i class="fas fa-envelope-open-text text-6xl text-secondary mb-4 info-icon"></i>
+                        <h3 class="text-2xl font-bold mb-2">ช่องทางอีเมล</h3>
+                        <p class="text-lg text-gray-300 break-all">123456@gmail.com</p>
+                        <p class="text-base text-gray-400 mt-2">ตอบกลับภายใน 24 ชั่วโมง ถ้านอนจะไม่ตอบ</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Contact Form and Map Section -->
+        <section id="contact-form-section" class="container mx-auto px-4 py-16">
+            <h2 class="text-4xl sm:text-5xl font-extrabold text-white text-center mb-12 uppercase tracking-wider">
+                ส่งข้อความถึงเรา
+            </h2>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-stretch">
+                
+                <div class="bg-light p-6 sm:p-10 rounded-2xl shadow-2xl shadow-black/50 border border-gray-700">
+                    <p class="text-gray-400 mb-8 text-lg">
+                        กรุณากรอกรายละเอียดเพื่อที่เราจะสามารถติดต่อกลับและช่วยเหลือคุณได้อย่างรวดเร็วที่สุด
+                    </p>
+
+                    <form id="contact-form" class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="name" class="block text-sm font-medium text-gray-300 mb-2">ชื่อ - นามสกุล <span class="text-secondary">*</span></label>
+                                <input type="text" id="name" name="name" required class="w-full px-4 py-3 bg-dark border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-secondary transition duration-200">
+                            </div>
+                            <div>
+                                <label for="email" class="block text-sm font-medium text-gray-300 mb-2">อีเมล <span class="text-secondary">*</span></label>
+                                <input type="email" id="email" name="email" required class="w-full px-4 py-3 bg-dark border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-secondary transition duration-200">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label for="subject" class="block text-sm font-medium text-gray-300 mb-2">หัวข้อ <span class="text-secondary">*</span></label>
+                            <input type="text" id="subject" name="subject" required class="w-full px-4 py-3 bg-dark border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-secondary transition duration-200">
+                        </div>
+                        
+                        <div>
+                            <label for="message" class="block text-sm font-medium text-gray-300 mb-2">ข้อความ <span class="text-secondary">*</span></label>
+                            <textarea id="message" name="message" rows="5" required class="w-full px-4 py-3 bg-dark border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-secondary transition duration-200"></textarea>
+                        </div>
+                        
+                        <button type="submit" class="w-full bg-secondary text-white font-extrabold py-3 rounded-lg shadow-lg shadow-secondary/40 hover:bg-red-700 transition duration-300 transform hover:scale-[1.005] text-xl tracking-wider mt-4">
+                            ส่งข้อความ <i class="fas fa-paper-plane ml-2"></i>
+                        </button>
+                    </form>
+                </div>
+                
+                <!-- Map Container -->
+                <div class="bg-dark p-4 rounded-2xl shadow-2xl border border-gray-700 map-container-height">
+                    <h3 class="text-2xl font-bold text-center text-white mb-4 border-b border-gray-700 pb-3">แผนที่ตั้งของเรา</h3>
+                    
+                    <!-- The iframe uses h-full and w-full to fill its parent div -->
+                    <div class="w-full h-[calc(100%-52px)]"> <!-- Calculate height: 100% minus the header height (approx 52px) -->
+                        <iframe 
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15761.50346045884!2d101.28471185!3d6.55052405!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31b3433e218c5417%3A0xa94458f338d159a!2sYala%20Technical%20College!5e0!3m2!1sen!2sth!4v1700486400000!5m2!1sen!2sth" 
+                            width="100%" 
+                            height="100%" 
+                            style="border:0;" 
+                            allowfullscreen="" 
+                            loading="lazy" 
+                            referrerpolicy="no-referrer-when-downgrade"
+                            class="rounded-lg shadow-inner"
+                            aria-label="แผนที่วิทยาลัยเทคนิคยะลา"
+                        ></iframe>
+                    </div>
+                </div>
+                
+            </div>
+        </section>
+
+    </main>
+    
+    <!-- Footer Section -->
+    <footer class="bg-gray-950 mt-20 pt-12 pb-6 text-white border-t border-light-bg">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 border-b border-gray-800 pb-8">
+                <div>
+                    <h3 class="text-2xl font-extrabold mb-4" style="font-family: serif;">SLOWLY</h3>
+                    <p class="text-sm text-gray-400">ร้านค้าอุปกรณ์คอมพิวเตอร์และบริการจัดสเปคคอม</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">บริการ</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="build_pc.html" class="text-gray-400 hover:text-secondary transition">จัดสเปคคอม</a></li>
+                        <li><a href="set_pc.html" class="text-gray-400 hover:text-secondary transition">คอมเซ็ตพร้อมเล่น</a></li>
+                        <li><a href="promo.html" class="text-gray-400 hover:text-secondary transition">โปรโมชั่น</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">ช่วยเหลือ</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="text-gray-400 hover:text-secondary transition">วิธีการสั่งซื้อ</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-secondary transition">นโยบายการรับประกัน</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-secondary transition">นโยบายความเป็นส่วนตัว</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">ติดต่อเรา</h3>
+                    <ul class="space-y-3 text-sm">
+                        <li class="flex items-start">
+                            <i class="fas fa-map-marker-alt text-secondary mt-1 mr-3"></i>
+                            <span class="text-gray-400">วิทยาลัยเทคนิคยะลา</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-phone text-secondary mr-3"></i>
+                            <span class="text-gray-400">099-999-9999</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope text-secondary mr-3"></i>
+                            <span class="text-gray-400">123456@gmail.com</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mt-10 border-t border-gray-800 pt-6 flex flex-col md:flex-row items-center justify-between">
+                <div class="flex space-x-6 mb-4 md:mb-0">
+                    <a href="#" class="text-gray-400 hover:text-secondary transition text-xl"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-secondary transition text-xl"><i class="fab fa-line"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-secondary transition text-xl"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-secondary transition text-xl"><i class="fab fa-youtube"></i></a>
+                </div>
+                <p class="text-sm text-gray-500 text-center">
+                    © 2025 SLOWLY. COMPUTER .
+                </p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Firebase and Application Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- GLOBAL ENVIRONMENT VARIABLES ---
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        // --- FIREBASE SERVICE INSTANCES ---
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        
+        let userId = null;
+        let isAuthReady = false;
+
+        // Function for creating a non-blocking toast notification
+        function createToast(message, type = 'success') {
+            const existingToast = document.getElementById('toast-notification');
+            if (existingToast) {
+                existingToast.remove();
+            }
+
+            let iconClass = 'fas fa-check-circle';
+            let iconColor = 'text-secondary'; 
+
+            if (type === 'warning') {
+                iconClass = 'fas fa-exclamation-triangle';
+                iconColor = 'text-yellow-500'; 
+            }
+            
+            const toast = document.createElement('div');
+            toast.id = 'toast-notification';
+            // Fixed bottom-5 right-5 position
+            toast.className = 'fixed bottom-5 right-5 z-50 bg-dark border border-secondary text-white p-4 rounded-lg shadow-2xl transition-opacity duration-300 ease-out transform translate-y-full opacity-0 max-w-sm';
+            toast.innerHTML = `
+                <div class="flex items-center space-x-3">
+                    <i class="${iconClass} ${iconColor} text-xl"></i>
+                    <span class="font-bold text-base">${message}</span>
+                </div>
+            `;
+
+            document.body.appendChild(toast);
+
+            // Show Toast
+            setTimeout(() => {
+                toast.style.transform = 'translateY(0)';
+                toast.style.opacity = '1';
+            }, 10); 
+
+            // Hide and remove Toast after 3 seconds
+            setTimeout(() => {
+                toast.style.transform = 'translateY(100%)';
+                toast.style.opacity = '0';
+                toast.addEventListener('transitionend', () => {
+                    if (toast.parentElement) {
+                        toast.remove();
+                    }
+                });
+            }, 3000); 
+        }
+
+        // --- FIREBASE & AUTHENTICATION SETUP ---
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                userId = user.uid;
+            } else {
+                // If not signed in, sign in anonymously or with custom token
+                try {
+                    if (initialAuthToken) {
+                        await signInWithCustomToken(auth, initialAuthToken);
+                        userId = auth.currentUser.uid;
+                    } else {
+                        const anonymousUser = await signInAnonymously(auth);
+                        userId = anonymousUser.user.uid;
+                    }
+                } catch (error) {
+                    console.error("Authentication failed:", error);
+                    createToast("การยืนยันตัวตนล้มเหลว", 'warning');
+                    // Fallback to a random UUID if auth fails completely
+                    userId = crypto.randomUUID(); 
+                }
+            }
+            isAuthReady = true;
+            console.log("Auth Ready. User ID:", userId);
+
+            // Display truncated User ID for collaboration/debugging (Mandatory requirement)
+            const userIdDisplay = document.getElementById('user-id-display');
+            if (userIdDisplay) {
+                userIdDisplay.textContent = `UID: ${userId}`;
+                userIdDisplay.style.display = 'block';
+            }
+
+            // Once authenticated, start listening to cart changes
+            updateCartIcon(db, userId);
+        });
+
+
+        // --- FIRESTORE CART LOGIC ---
+        /**
+         * Listens to the current user's cart items in Firestore and updates the UI counter.
+         * @param {object} db - Firestore instance.
+         * @param {string} userId - Current user ID.
+         */
+        function updateCartIcon(db, userId) {
+            if (!db || !userId) return;
+
+            // Path: /artifacts/{appId}/public/data/carts
+            const cartCollectionPath = `/artifacts/${appId}/public/data/carts`;
+            const q = query(collection(db, cartCollectionPath), where("userId", "==", userId));
+
+            // Listen for real-time changes
+            onSnapshot(q, (snapshot) => {
+                let totalItems = 0;
+                snapshot.forEach((doc) => {
+                    const item = doc.data();
+                    // Assuming cart items have a 'quantity' field
+                    totalItems += item.quantity || 0; 
+                });
+
+                // Update all elements with id 'cart-count'
+                const cartCounts = document.querySelectorAll('#cart-count'); 
+                cartCounts.forEach(element => {
+                    element.textContent = totalItems;
+                    element.style.display = totalItems > 0 ? 'flex' : 'none';
+                });
+
+            }, (error) => {
+                console.error("Error listening to cart snapshot:", error);
+                createToast("ไม่สามารถโหลดตะกร้าสินค้าได้", 'warning');
+            });
+        }
+
+
+        // --- APPLICATION UTILITIES ---
+        // Function for performing a site-wide search
+        function performGlobalSearch() {
+            const searchInput = document.getElementById('searchInput'); 
+            const query = searchInput.value.trim();
+            if (query) {
+                // Redirect to the search results page with the query parameter
+                window.location.href = `search_results.html?q=${encodeURIComponent(query)}`;
+            }
+        }
+        window.performGlobalSearch = performGlobalSearch; // Make accessible globally
+
+        // Script for handling form submission (Mock)
+        document.getElementById('contact-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            // In a real application, you would save this data to Firestore or another backend service here.
+            
+            // Show successful submission with Toast Notification
+            createToast('ขอบคุณสำหรับข้อความ! เราได้รับเรื่องและจะติดต่อกลับโดยเร็วที่สุด');
+
+            // Clear the form
+            this.reset();
+        });
+
+        // Add event listener to check authentication status and start listeners when ready
+        // The onAuthStateChanged listener handles the initial setup and calling updateCartIcon.
+    </script>
+</body>
+</html>

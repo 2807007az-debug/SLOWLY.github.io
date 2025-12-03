@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SLOWLY - คอมเซ็ต</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Custom Styles and Variables */
+        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;700;800&display=swap');
+        
+        :root {
+            --primary: #000;
+            --secondary: #d90000; /* Red color for accents/sales */
+            --dark-bg: #1a1a1a;
+            --light-bg: #2a2a2a;
+            --price-new: #f7a000; /* Orange/Gold for new price */
+        }
+
+        /* Applying Kanit font globally */
+        body {
+            font-family: 'Kanit', sans-serif;
+            background-color: var(--primary);
+            color: white;
+        }
+
+        /* Custom utility classes to match the dark theme and brand colors */
+        .bg-primary { background-color: var(--primary); }
+        .bg-dark { background-color: var(--dark-bg); }
+        .bg-light { background-color: var(--light-bg); }
+        .text-secondary { color: var(--secondary); }
+        .bg-secondary { background-color: var(--secondary); }
+        .text-price-new { color: var(--price-new); }
+        
+        .section-title {
+            position: relative;
+            display: inline-block;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50%;
+            height: 4px;
+            background-color: var(--secondary);
+            border-radius: 2px;
+        }
+        
+        /* Highlight active navigation link: 'คอมเซ็ต' */
+        .nav-link.active {
+            color: var(--secondary);
+            border-bottom: 3px solid var(--secondary);
+            padding-bottom: 0.25rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sticky top-0 z-30 shadow-2xl">
+        <header class="bg-primary">
+            <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+                
+                <div class="text-4xl font-extrabold" style="font-family: serif; letter-spacing: 1px;">
+                    <a href="index.html" class="text-white">SLOWLY</a>
+                </div>
+
+                <div class="flex-grow max-w-xl mx-8 relative">
+                    <input type="text" id="searchInput" placeholder="ค้นหาสินค้า" class="w-full py-2 pl-6 pr-12 bg-light text-white rounded-full border border-[#444] focus:border-secondary focus:ring focus:ring-secondary/50 transition" onkeypress="if(event.key === 'Enter') performGlobalSearch()">
+                    <button onclick="performGlobalSearch()" class="absolute right-0 top-1/2 transform -translate-y-1/2 mr-3 text-secondary hover:text-white transition">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+                <nav>
+                    <ul class="flex space-x-6 text-lg">
+                        <li>
+                            <a href="cart.html" class="text-white hover:text-secondary transition relative p-2">
+                                <i class="fas fa-shopping-cart mr-2"></i> ตะกร้า
+                                <span id="cart-count" class="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-secondary rounded-full" style="display: none;">0</span>
+                            </a>
+                            <a href="#" class="text-white hover:text-secondary transition relative p-2">
+                                <i class="fas fa-user-circle mr-2"></i> ล็อกอิน
+                                <span id="cart-count" class="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-secondary rounded-full" style="display: none;">0</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+        <nav class="bg-gray-900 border-t border-b-2 border-light-bg">
+            <div class="container mx-auto px-4">
+                <ul class="flex justify-center space-x-10 py-3 font-semibold text-lg">
+                    <li><a href="index.html" class="nav-link text-white hover:text-secondary transition">สินค้าหลัก</a></li>
+                    <li><a href="set_pc.html" class="nav-link active text-white hover:text-secondary transition">คอมเซ็ต</a></li>
+                    <li><a href="promo.html" class="nav-link text-white hover:text-secondary transition">โปรโมชั่น</a></li>
+                    <li><a href="build_pc.html" class="nav-link text-white hover:text-secondary transition">จัดสเปคคอม</a></li>
+                    <li><a href="contact.html" class="nav-link text-white hover:text-secondary transition">ติดต่อเรา</a></li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+
+    <main class="container mx-auto px-4 py-12">
+        <section id="pc-sets">
+            <h2 class="section-title text-4xl font-bold text-white text-center mb-10">คอมเซ็ตพร้อมเล่น</h2>
+
+            <div class="space-y-12">
+                
+                <div class="bg-dark p-6 rounded-xl shadow-2xl flex flex-col lg:flex-row items-center lg:items-start space-y-6 lg:space-y-0 lg:space-x-8 border-2 border-secondary hover:shadow-secondary/50 transition duration-300">
+                    <div class="w-full lg:w-1/3 flex-shrink-0">
+                        <img src="https://img.advice.co.th/images_nas/pic_product4/A0148121/A0148121OK_BIG_2.jpg" alt="Set 1 - Intel" class="rounded-lg mb-4 lg:mb-0 w-full h-64 object-cover border border-gray-700">
+                    </div>
+                    <div class="w-full lg:w-2/3">
+                        <span class="text-sm font-semibold text-secondary bg-light px-3 py-1 rounded-full inline-block mb-3">#Gaming_Extreme</span>
+                        <h3 class="text-3xl font-bold text-white mb-2">COMPUTER SET MARU-2511076 i7-14700K / RTX4060 Ti 8GB / 32GB DDR5</h3>
+                        
+                        <p class="text-gray-400 text-base mb-4">สเปคระดับท็อปสำหรับเกมเมอร์และนักสร้างคอนเทนต์ที่ต้องการประสิทธิภาพสูงสุด</p>
+                        
+                        <ul class="text-sm text-gray-300 space-y-2 mb-4">
+                            <li class="flex items-center"><i class="fas fa-microchip text-secondary mr-2"></i> Intel Core i7-14700K</li>
+                            <li class="flex items-center"><i class="fas fa-memory text-secondary mr-2"></i> RAM 32GB DDR5/6000MHz</li>
+                            <li class="flex items-center"><i class="fas fa-video text-secondary mr-2"></i> NVIDIA RTX 4060 Ti 8GB</li>
+                            <li class="flex items-center"><i class="fas fa-hdd text-secondary mr-2"></i> SSD 1TB NVMe</li>
+                        </ul>
+
+                        <div class="flex flex-col md:flex-row items-baseline md:items-center justify-between border-t border-gray-700 pt-4 mt-4">
+                            <span class="text-xl font-semibold text-white">ราคาพิเศษ:</span>
+                            <span class="text-4xl font-extrabold text-price-new">฿49,900.00</span>
+                        </div>
+                        <div class="flex space-x-4 mt-4">
+                            <a href="set_detail.html?id=set1" class="w-1/2 text-center bg-gray-600 text-white font-bold py-3 rounded-lg hover:bg-gray-700 transition text-lg">
+                                <i class="fas fa-eye mr-2"></i> ดูรายละเอียด
+                            </a>
+                            <button onclick="addToCartSet('COMPUTER SET MARU-2511076 i7-14700K / RTX4060 Ti 8GB / 32GB DDR5', 49900.00)" class="w-1/2 bg-secondary text-white font-bold py-3 rounded-lg hover:bg-red-700 transition text-lg">
+                                <i class="fas fa-shopping-cart mr-2"></i> เพิ่มลงตะกร้า
+                            </button>
+                        </div>
+                        </div>
+                </div>
+
+                <div class="bg-dark p-6 rounded-xl shadow-xl flex flex-col lg:flex-row items-center lg:items-start space-y-6 lg:space-y-0 lg:space-x-8 border border-gray-700 hover:shadow-xl transition duration-300">
+                    <div class="w-full lg:w-1/3 flex-shrink-0">
+                        <img src="https://tse1.mm.bing.net/th/id/OIP.oFyt2-TSZtMIT22zYopjEgHaHa?pid=ImgDet&w=474&h=474&rs=1&o=7&rm=3" alt="Set 2 - Mid Range" class="rounded-lg mb-4 lg:mb-0 w-full h-64 object-cover border border-gray-700">
+                    </div>
+                    <div class="w-full lg:w-2/3">
+                        <span class="text-sm font-semibold text-secondary bg-light px-3 py-1 rounded-full inline-block mb-3">#Best_Value</span>
+                        <h3 class="text-3xl font-bold text-white mb-2">COMPUTER SET CORE I5-13400F / RTX 4060 8GB / 16GB DDR4</h3>
+                        
+                        <p class="text-gray-400 text-base mb-4">สเปคยอดนิยม คุ้มค่าที่สุดสำหรับการเล่นเกมที่ความละเอียด 1080p/1440p</p>
+                        
+                        <ul class="text-sm text-gray-300 space-y-2 mb-4">
+                            <li class="flex items-center"><i class="fas fa-microchip text-secondary mr-2"></i> Intel Core i5-13400F</li>
+                            <li class="flex items-center"><i class="fas fa-memory text-secondary mr-2"></i> RAM 16GB DDR4/3200MHz</li>
+                            <li class="flex items-center"><i class="fas fa-video text-secondary mr-2"></i> NVIDIA RTX 4060 8GB</li>
+                            <li class="flex items-center"><i class="fas fa-hdd text-secondary mr-2"></i> SSD 500GB NVMe</li>
+                        </ul>
+
+                        <div class="flex flex-col md:flex-row items-baseline md:items-center justify-between border-t border-gray-700 pt-4 mt-4">
+                            <span class="text-xl font-semibold text-white">ราคาพิเศษ:</span>
+                            <span class="text-4xl font-extrabold text-price-new">฿42,900.00</span>
+                        </div>
+                        <div class="flex space-x-4 mt-4">
+                            <a href="set_detail.html?id=set2" class="w-1/2 text-center bg-gray-600 text-white font-bold py-3 rounded-lg hover:bg-gray-700 transition text-lg">
+                                <i class="fas fa-eye mr-2"></i> ดูรายละเอียด
+                            </a>
+                            <button onclick="addToCartSet('COMPUTER SET CORE I5-13400F / RTX 4060 8GB / 16GB DDR4', 42900.00)" class="w-1/2 bg-secondary text-white font-bold py-3 rounded-lg hover:bg-red-700 transition text-lg">
+                                <i class="fas fa-shopping-cart mr-2"></i> เพิ่มลงตะกร้า
+                            </button>
+                        </div>
+                        </div>
+                </div>
+
+                <div class="bg-dark p-6 rounded-xl shadow-xl flex flex-col lg:flex-row items-center lg:items-start space-y-6 lg:space-y-0 lg:space-x-8 border border-gray-700 hover:shadow-xl transition duration-300">
+                    <div class="w-full lg:w-1/3 flex-shrink-0">
+                        <img src="https://img.advice.co.th/images_nas/pic_product4/A0147059/A0147059OK_BIG_2.jpg" alt="Set 3 - Budget" class="rounded-lg mb-4 lg:mb-0 w-full h-64 object-cover border border-gray-700">
+                    </div>
+                    <div class="w-full lg:w-2/3">
+                        <span class="text-sm font-semibold text-secondary bg-light px-3 py-1 rounded-full inline-block mb-3">#Budget_Gaming</span>
+                        <h3 class="text-3xl font-bold text-white mb-2">COMPUTER SET CORE I5-12400F / RX 6600 8GB / 16GB DDR4</h3>
+                        
+                        <p class="text-gray-400 text-base mb-4">สเปคเริ่มต้นสำหรับผู้ที่ต้องการเล่นเกมออนไลน์และทำงานทั่วไป</p>
+                        
+                        <ul class="text-sm text-gray-300 space-y-2 mb-4">
+                            <li class="flex items-center"><i class="fas fa-microchip text-secondary mr-2"></i> Intel Core i5-12400F</li>
+                            <li class="flex items-center"><i class="fas fa-memory text-secondary mr-2"></i> RAM 16GB DDR4/3200MHz</li>
+                            <li class="flex items-center"><i class="fas fa-video text-secondary mr-2"></i> AMD Radeon RX 6600 8GB</li>
+                            <li class="flex items-center"><i class="fas fa-hdd text-secondary mr-2"></i> SSD 500GB NVMe</li>
+                        </ul>
+
+                        <div class="flex flex-col md:flex-row items-baseline md:items-center justify-between border-t border-gray-700 pt-4 mt-4">
+                            <span class="text-xl font-semibold text-white">ราคาพิเศษ:</span>
+                            <span class="text-4xl font-extrabold text-price-new">฿39,900.00</span>
+                        </div>
+                        <div class="flex space-x-4 mt-4">
+                            <a href="set_detail.html?id=set3" class="w-1/2 text-center bg-gray-600 text-white font-bold py-3 rounded-lg hover:bg-gray-700 transition text-lg">
+                                <i class="fas fa-eye mr-2"></i> ดูรายละเอียด
+                            </a>
+                            <button onclick="addToCartSet('COMPUTER SET CORE I5-12400F / RX 6600 8GB / 16GB DDR4', 39900.00)" class="w-1/2 bg-secondary text-white font-bold py-3 rounded-lg hover:bg-red-700 transition text-lg">
+                                <i class="fas fa-shopping-cart mr-2"></i> เพิ่มลงตะกร้า
+                            </button>
+                        </div>
+                        </div>
+                </div>
+
+            </div>
+
+        </section>
+    </main>
+
+    <footer class="bg-gray-950 mt-12 pt-10 pb-4 text-white">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 border-b border-gray-800 pb-8">
+                <div>
+                    <h3 class="text-2xl font-extrabold mb-4" style="font-family: serif;">SLOWLY</h3>
+                    <p class="text-sm text-gray-400">ร้านค้าอุปกรณ์คอมพิวเตอร์และบริการจัดสเปคคอม</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">บริการ</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="build_pc.html" class="text-gray-400 hover:text-secondary transition">จัดสเปคคอม</a></li>
+                        <li><a href="set_pc.html" class="text-gray-400 hover:text-secondary transition">คอมเซ็ตพร้อมเล่น</a></li>
+                        <li><a href="promo.html" class="text-gray-400 hover:text-secondary transition">โปรโมชั่น</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">ช่วยเหลือ</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="text-gray-400 hover:text-secondary transition">วิธีการสั่งซื้อ</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-secondary transition">นโยบายการรับประกัน</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-secondary transition">นโยบายความเป็นส่วนตัว</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">ติดต่อเรา</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li class="flex items-center">
+                            <i class="fas fa-map-marker-alt text-secondary mr-3"></i>
+                            <span class="text-gray-400">วิทยาลัยเทคนิคยะลา</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-phone text-secondary mr-3"></i>
+                            <span class="text-gray-400">099-999-9999</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope text-secondary mr-3"></i>
+                            <span class="text-gray-400">123456@gmail.com</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mt-10 border-t border-gray-800 pt-6 flex flex-col md:flex-row items-center justify-between">
+                <div class="flex space-x-6 mb-4 md:mb-0">
+                    <a href="#" class="text-gray-400 hover:text-secondary transition text-xl"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-secondary transition text-xl"><i class="fab fa-line"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-secondary transition text-xl"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-secondary transition text-xl"><i class="fab fa-youtube"></i></a>
+                </div>
+                <p class="text-sm text-gray-500 text-center">
+                    &copy; 2025 SLOWLY. COMPUTER.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // NEW: Function for creating a centered Modal Pop-up (Dialog) - แทนที่ createToast() เดิม
+        function createModal(productName) {
+            const existingModal = document.getElementById('modal-notification');
+            if (existingModal) {
+                existingModal.remove();
+            }
+
+            // 1. Modal Overlay (พื้นหลังทึบ)
+            const overlay = document.createElement('div');
+            overlay.id = 'modal-notification';
+            overlay.className = 'fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 backdrop-blur-sm transition-opacity duration-300 opacity-0';
+
+            // 2. Modal Content (กล่องข้อความ)
+            const modalContent = document.createElement('div');
+            modalContent.className = 'bg-dark border border-secondary p-8 rounded-xl shadow-2xl max-w-md w-full transform scale-75 transition-transform duration-300';
+            
+            // สร้างข้อความและปุ่ม
+            modalContent.innerHTML = `
+                <div class="text-center">
+                    <i class="fas fa-check-circle text-secondary text-5xl mb-4 animate-bounce"></i>
+                    <h3 class="text-3xl font-bold mb-2 text-white">เพิ่มลงตะกร้าแล้ว!</h3>
+                    <p class="text-xl text-gray-300 mb-6">"${productName}"</p>
+                    <div class="flex justify-center space-x-4">
+                        <button onclick="document.getElementById('modal-notification').remove()" class="bg-gray-700 text-white font-semibold py-2 px-6 rounded-lg hover:bg-gray-600 transition">
+                            เลือกสินค้าต่อ
+                        </button>
+                        <a href="cart.html" class="bg-secondary text-white font-semibold py-2 px-6 rounded-lg hover:bg-red-700 transition">
+                            ไปที่ตะกร้า <i class="fas fa-shopping-cart ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+            `;
+
+            overlay.appendChild(modalContent);
+            document.body.appendChild(overlay);
+
+            // แสดง Modal ด้วย Animation
+            setTimeout(() => {
+                overlay.style.opacity = '1';
+                modalContent.style.transform = 'scale(1)';
+            }, 10);
+        }
+        
+        // NEW: Function for performing a site-wide search
+        function performGlobalSearch() {
+            const searchInput = document.getElementById('searchInput'); // Use 'searchInput' ID
+            const query = searchInput.value.trim();
+            if (query) {
+                // Redirect to the search results page with the query parameter
+                window.location.href = `search_results.html?q=${encodeURIComponent(query)}`;
+            }
+        }
+        
+        // Helper function to format price
+        function formatPrice(price) {
+            return '฿' + (price || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }
+
+        // Function to update the cart icon count across all pages
+        function updateCartIcon() {
+            const cart = JSON.parse(localStorage.getItem('cartItems')) || [];
+            const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
+            const cartCountElement = document.getElementById('cart-count');
+            if (cartCountElement) {
+                cartCountElement.textContent = totalItems;
+                cartCountElement.style.display = totalItems > 0 ? 'flex' : 'none';
+            }
+        }
+
+        // Add to Cart function for PC Sets (MODIFIED)
+        function addToCartSet(setName, price) {
+            const cart = JSON.parse(localStorage.getItem('cartItems')) || [];
+            const itemName = `PC Set: ${setName}`; // Use a consistent name format
+            const existingItemIndex = cart.findIndex(item => item.name === itemName); 
+
+            if (existingItemIndex > -1) {
+                cart[existingItemIndex].quantity += 1;
+            } else {
+                cart.push({
+                    name: itemName, // Prepend PC Set for distinction
+                    price: price,
+                    quantity: 1,
+                    type: 'PC Set'
+                });
+            }
+
+            localStorage.setItem('cartItems', JSON.stringify(cart));
+            // *** เปลี่ยนจากการเรียกใช้ createToast() เป็น createModal() ***
+            createModal(itemName);
+            updateCartIcon();
+        }
+
+        // Run updateCartIcon on page load
+        document.addEventListener('DOMContentLoaded', updateCartIcon);
+        
+    </script>
+</body>
+</html>

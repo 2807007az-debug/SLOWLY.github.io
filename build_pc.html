@@ -1,0 +1,1463 @@
+<!DOCTYPE html>
+
+<html lang="th">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SLOWLY - จัดสเปคคอมใหม่</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+
+        /* Custom Styles and Variables */
+
+        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600;700;800&display=swap');
+
+       
+
+        :root {
+
+            --primary: #000000; /* Black */
+
+            --secondary: #D90000; /* Red Accent */
+
+            --dark-bg: #1A1A1A; /* Dark Gray */
+
+            --light-bg: #2A2A2A; /* Slightly Lighter Dark Gray */
+
+            --card-bg: #333333; /* Dark Gray for Card background in Spec List */
+
+            --price-new: #d9d200; /* Red for Price/Accent */
+
+        }
+
+
+
+        body {
+
+            font-family: 'Kanit', sans-serif;
+
+            background-color: var(--primary); /* เปลี่ยนเป็น Primary Black */
+
+            color: white;
+
+            min-height: 100vh;
+
+        }
+
+
+
+        .bg-primary { background-color: var(--primary); }
+
+        .bg-dark { background-color: var(--dark-bg); }
+
+        .bg-light { background-color: var(--light-bg); }
+
+        .bg-card { background-color: var(--card-bg); }
+
+        .text-secondary { color: var(--secondary); }
+
+        .bg-secondary { background-color: var(--secondary); }
+
+        .border-secondary { border-color: var(--secondary); }
+
+        .hover\:bg-secondary:hover { background-color: var(--secondary); }
+
+        .hover\:text-secondary:hover { color: var(--secondary); }
+
+        .text-price-new { color: var(--price-new); }
+
+       
+
+        .section-title {
+
+            position: relative;
+
+            padding-bottom: 0.5rem;
+
+            margin-bottom: 1.5rem;
+
+        }
+
+
+
+        .nav-link[href="build_pc.html"] {
+
+            color: var(--secondary);
+
+            border-bottom: 3px solid var(--secondary);
+
+            padding-bottom: 0.25rem;
+
+        }
+
+
+
+        /* NEW: All-in-One List Styles */
+
+        .spec-item-row {
+
+            background-color: var(--card-bg); /* Use card-bg for the row */
+
+            transition: all 0.2s;
+
+            border: 2px solid transparent;
+
+        }
+
+        
+
+        .spec-item-row:hover {
+
+            border-color: var(--secondary);
+
+            box-shadow: 0 4px 15px rgba(217, 0, 0, 0.3); /* Shadow with new RED color (D90000) */
+
+            transform: translateY(-2px); /* Slight lift on hover */
+
+        }
+
+        
+
+        /* Image Container in Spec Row */
+
+        .spec-item-row .img-container {
+
+            border-radius: 8px;
+
+            overflow: hidden;
+
+            background-color: var(--light-bg); /* Use lighter dark background for image box */
+
+        }
+
+
+
+        .summary-sticky {
+
+            position: sticky;
+
+            top: 100px; /* Adjust for header height */
+
+            max-height: calc(100vh - 120px);
+
+            overflow-y: auto;
+
+        }
+
+
+
+        /* Modal Styles */
+
+        .modal {
+
+            display: none;
+
+            position: fixed;
+
+            z-index: 100;
+
+            left: 0;
+
+            top: 0;
+
+            width: 100%;
+
+            height: 100%;
+
+            overflow: auto;
+
+            background-color: rgba(0,0,0,0.7);
+
+        }
+
+
+
+        .modal-content {
+
+            background-color: var(--light-bg);
+
+            margin: 5% auto;
+
+            padding: 20px;
+
+            border: 1px solid #888;
+
+            width: 90%;
+
+            max-width: 1200px; /* Increased max width for more products */
+
+            border-radius: 12px;
+
+            position: relative;
+
+        }
+
+
+
+        .modal-card {
+
+            cursor: pointer;
+
+            transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+
+            border: 2px solid var(--light-bg); /* Change default border to light-bg for better contrast */
+
+            background-color: var(--dark-bg); /* Use dark-bg for modal cards */
+
+        }
+
+        .modal-card:hover {
+
+            transform: translateY(-2px);
+
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+
+            border-color: var(--secondary); /* New hover effect */
+
+        }
+
+        .modal-card.selected {
+
+            border-color: var(--secondary);
+
+            box-shadow: 0 0 15px rgba(217, 0, 0, 0.7); /* Change Shadow to RED (D90000) */
+
+            transform: scale(1.02);
+
+        }
+
+
+
+        @media (max-width: 1024px) {
+
+            .summary-sticky {
+
+                position: static;
+
+                max-height: none;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+
+
+    <div class="sticky top-0 z-30 shadow-2xl">
+
+        <header class="bg-primary">
+
+            <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+
+                <div class="text-4xl font-extrabold" style="font-family: serif; letter-spacing: 1px;">
+
+                    <a href="index.html" class="text-white hover:text-secondary transition">SLOWLY</a>
+
+                </div>
+
+                <div class="flex-grow max-w-xl mx-8 relative">
+
+                    <input type="text" id="searchInput" placeholder="ค้นหาสินค้า" class="w-full py-2 pl-6 pr-12 bg-light text-white rounded-full border border-gray-600 focus:border-secondary focus:ring focus:ring-secondary/50 transition" onkeypress="if(event.key === 'Enter') performGlobalSearch()">
+
+                    <button onclick="performGlobalSearch()" class="absolute right-0 top-1/2 transform -translate-y-1/2 mr-3 text-secondary hover:text-white transition">
+
+                        <i class="fas fa-search"></i>
+
+                    </button>
+
+                </div>
+
+               <nav>
+
+                    <ul class="flex space-x-6 text-lg">
+
+                        <li>
+
+                            <a href="cart.html" class="text-white hover:text-secondary transition relative p-2">
+
+                                <i class="fas fa-shopping-cart mr-2"></i> ตะกร้า
+
+                                <span id="cart-count" class="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-secondary rounded-full" style="display: none;">0</span>
+
+                            </a>
+
+                            <a href="#" class="text-white hover:text-secondary transition relative p-2">
+
+                                <i class="fas fa-user-circle mr-2"></i> ล็อกอิน
+
+                                <span id="cart-count" class="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-secondary rounded-full" style="display: none;">0</span>
+
+                            </a>
+
+                        </li>
+
+                    </ul>
+
+                </nav>
+
+            </div>
+
+        </header>
+
+        <nav class="bg-gray-900 border-t border-b-2 border-gray-700">
+
+            <div class="container mx-auto px-4">
+
+                <ul class="flex justify-center space-x-10 py-3 font-semibold text-lg">
+
+                    <li><a href="index.html" class="nav-link text-white hover:text-secondary transition">สินค้าหลัก</a></li>
+
+                    <li><a href="set_pc.html" class="nav-link text-white hover:text-secondary transition">คอมเซ็ต</a></li>
+
+                    <li><a href="promo.html" class="nav-link text-white hover:text-secondary transition">โปรโมชั่น</a></li>
+
+                    <li><a href="build_pc.html" class="nav-link text-white hover:text-secondary transition">จัดสเปคคอม</a></li>
+
+                    <li><a href="contact.html" class="nav-link text-white hover:text-secondary transition">ติดต่อเรา</a></li>
+
+                </ul>
+
+            </div>
+
+        </nav>
+
+    </div>
+
+
+
+    <main class="container mx-auto px-4 mt-8">
+
+        <section id="pc-builder" class="py-10">
+
+            <div class="text-center">
+
+                <h2 class="section-title text-5xl font-extrabold text-white">เครื่องมือจัดสเปคคอมพิวเตอร์</h2>
+
+                <p class="text-gray-400 mb-8 text-lg">ตรวจสอบและแก้ไขสเปคคอมพิวเตอร์ทั้งหมดในหน้าเดียว</p>
+
+            </div>
+
+
+
+            <div class="lg:flex lg:space-x-8">
+
+               
+
+                <div class="lg:w-2/3 mb-8 lg:mb-0">
+
+                    <div class="bg-light p-6 rounded-xl shadow-2xl border-t-4 border-secondary">
+
+                        <h3 class="text-2xl font-bold text-secondary mb-4 border-b pb-3 border-gray-700">รายการส่วนประกอบ</h3>
+
+                       
+
+                        <div id="full-spec-list" class="space-y-4">
+
+                            </div>
+
+
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="lg:w-1/3">
+
+                    <div class="bg-light p-6 rounded-xl shadow-2xl summary-sticky">
+
+                        <h3 class="text-2xl font-bold text-secondary mb-4 border-b pb-3 border-gray-700">สรุปสเปค</h3>
+
+                       
+
+                        <div id="summary-list" class="space-y-2">
+
+                            </div>
+
+
+
+                        <div class="border-t border-gray-700 pt-4 mt-6">
+
+                            <div class="flex justify-between items-center mb-4">
+
+                                <span class="text-xl font-semibold">ราคารวม:</span>
+
+                                <span id="total-price" class="text-4xl font-extrabold text-price-new">฿0.00</span>
+
+                            </div>
+
+                           
+
+                            <input type="text" id="spec-name" placeholder="ตั้งชื่อสเปคนี้ (เช่น Gaming PC 2025)" class="w-full py-3 px-4 bg-dark text-white rounded-lg border border-gray-700 mb-4 placeholder-gray-500 focus:border-secondary focus:ring focus:ring-secondary/50">
+
+                           
+
+                            <button id="add-to-cart-btn" onclick="addToCartSpec()" class="w-full bg-secondary text-white font-bold py-3 rounded-lg hover:bg-[#0097a7] transition disabled:opacity-50 shadow-xl" disabled>
+
+                                <i class="fas fa-shopping-cart mr-2"></i> กรุณาเลือกส่วนประกอบที่จำเป็น
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+               
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <div id="selection-modal" class="modal" onclick="closeModal(event)">
+
+        <div class="modal-content">
+
+            <div class="flex justify-between items-center border-b pb-3 mb-4 border-gray-700">
+
+                <h3 id="modal-title" class="text-3xl font-bold text-secondary">เลือกส่วนประกอบ</h3>
+
+                <button onclick="document.getElementById('selection-modal').style.display='none'" class="text-gray-400 hover:text-white text-4xl">&times;</button>
+
+            </div>
+
+           
+
+            <div id="modal-item-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-h-[70vh] overflow-y-auto p-2">
+
+                </div>
+
+
+
+            <div class="mt-6 pt-3 border-t border-gray-700">
+
+                <button onclick="document.getElementById('selection-modal').style.display='none'" class="bg-gray-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-500 transition">
+
+                    ปิด
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <footer class="bg-gray-950 mt-12 pt-10 pb-4 text-white">
+
+        <div class="container mx-auto px-4">
+
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 border-b border-gray-800 pb-8">
+
+                <div>
+
+                    <h3 class="text-2xl font-extrabold mb-4" style="font-family: serif;">SLOWLY</h3>
+
+                    <p class="text-sm text-gray-400">ร้านค้าอุปกรณ์คอมพิวเตอร์และบริการจัดสเปคคอม</p>
+
+                </div>
+
+                <div>
+
+                    <h3 class="text-lg font-semibold mb-4">บริการ</h3>
+
+                    <ul class="space-y-2 text-sm">
+
+                        <li><a href="build_pc.html" class="text-gray-400 hover:text-secondary transition">จัดสเปคคอม</a></li>
+
+                        <li><a href="set_pc.html" class="text-gray-400 hover:text-secondary transition">คอมเซ็ตพร้อมเล่น</a></li>
+
+                        <li><a href="promo.html" class="text-gray-400 hover:text-secondary transition">โปรโมชั่น</a></li>
+
+                    </ul>
+
+                </div>
+
+                <div>
+
+                    <h3 class="text-lg font-semibold mb-4">ช่วยเหลือ</h3>
+
+                    <ul class="space-y-2 text-sm">
+
+                        <li><a href="#" class="text-gray-400 hover:text-secondary transition">วิธีการสั่งซื้อ</a></li>
+
+                        <li><a href="#" class="text-gray-400 hover:text-secondary transition">นโยบายการรับประกัน</a></li>
+
+                        <li><a href="#" class="text-gray-400 hover:text-secondary transition">นโยบายความเป็นส่วนตัว</a></li>
+
+                    </ul>
+
+                </div>
+
+                <div>
+
+                    <h3 class="text-lg font-semibold mb-4">ติดต่อเรา</h3>
+
+                    <ul class="space-y-2 text-sm">
+
+                        <li class="flex items-center">
+
+                            <i class="fas fa-map-marker-alt text-secondary mr-3"></i>
+
+                            <span class="text-gray-400">วิทยาลัยเทคนิคยะลา</span>
+
+                        </li>
+
+                        <li class="flex items-center">
+
+                            <i class="fas fa-phone text-secondary mr-3"></i>
+
+                            <span class="text-gray-400">099-999-9999</span>
+
+                        </li>
+
+                        <li class="flex items-center">
+
+                            <i class="fas fa-envelope text-secondary mr-3"></i>
+
+                            <span class="text-gray-400">123456@gmail.com</span>
+
+                        </li>
+
+                    </ul>
+
+                </div>
+
+            </div>
+
+            <div class="mt-10 border-t border-gray-800 pt-6 flex flex-col md:flex-row items-center justify-between">
+
+                <div class="flex space-x-6 mb-4 md:mb-0">
+
+                    <a href="#" class="text-gray-400 hover:text-secondary transition text-xl"><i class="fab fa-facebook-f"></i></a>
+
+                    <a href="#" class="text-gray-400 hover:text-secondary transition text-xl"><i class="fab fa-line"></i></a>
+
+                    <a href="#" class="text-gray-400 hover:text-secondary transition text-xl"><i class="fab fa-instagram"></i></a>
+
+                    <a href="#" class="text-gray-400 hover:text-secondary transition text-xl"><i class="fab fa-youtube"></i></a>
+
+                </div>
+
+                <p class="text-sm text-gray-500 text-center">
+
+                    &copy; 2025 SLOWLY. COMPUTER.
+
+                </p>
+
+            </div>
+
+        </div>
+
+    </footer>
+
+
+
+    <script>
+
+        // NEW: Function for performing a site-wide search (Keep)
+
+        function performGlobalSearch() {
+
+            const searchInput = document.getElementById('searchInput');
+
+            const query = searchInput.value.trim();
+
+            if (query) {
+
+                window.location.href = `search_results.html?q=${encodeURIComponent(query)}`;
+
+            }
+
+        }
+
+       
+
+        // Product data structure (Keep)
+
+        const componentsData = {
+
+            cpu: {
+
+                title: 'ซีพียู (CPU)',
+
+                required: true,
+
+                items: [
+
+                    { id: 'c-0', name: '— ยังไม่ได้เลือก —', price: 0, image: 'https://i.pinimg.com/1200x/60/52/9a/60529adb53a6f3362a207113d7ecfd6a.jpg', description: 'กรุณาเลือกซีพียู' },
+
+                    { id: 'c-1', name: 'AMD AM5 RYZEN 5 7500F', price: 5190, image: 'https://ihcupload.s3.ap-southeast-1.amazonaws.com/img/product/products63031_800.jpg', description: '3.7GHz 6C 12T (3Y)' },
+
+                    { id: 'c-2', name: 'INTEL 1851 CORE ULTRA 5 245KF', price: 6990, image: 'https://ihcupload.s3.ap-southeast-1.amazonaws.com/img/product/products63024_800.jpg', description: '3.6GHz 14C 14T (3Y)' },
+
+                    { id: 'c-3', name: 'AMD AM4 RYZEN 5 5500GT', price: 3890, image: 'https://ihcupload.s3.ap-southeast-1.amazonaws.com/img/product/products123932_800.jpg', description: 'Socket : AM4 6 cores 12 threads Base : 3.6GHz Turbo : 4.4GHz' },
+
+                    { id: 'c-4', name: 'INTEL 1700 CORE I5-14600KF', price: 8990, image: 'https://ihcupload.s3.ap-southeast-1.amazonaws.com/img/product/product40466_800.jpg', description: '3.5GHz 14C 20T' },
+
+                    { id: 'c-5', name: 'AMD AM4 RYZEN 5 5600', price: 3490, image: 'https://ihcupload.s3.ap-southeast-1.amazonaws.com/img/product/product736_800.jpg', description: 'Socket : AM4 6 cores 12 threads Base : 3.5GHz Turbo : 4.4GHz' },
+
+                    { id: 'c-6', name: 'AMD AM5 RYZEN 7 7700', price: 8990, image: 'https://ihcupload.s3.ap-southeast-1.amazonaws.com/img/product/product9505_800.jpg', description: '3.8 GHz 8C 16T' },
+
+                    { id: 'c-7', name: 'INTEL 1851 CORE ULTRA 7 265KF', price: 10700, image: 'https://ihcupload.s3.ap-southeast-1.amazonaws.com/img/product/products63026_800.jpg', description: '3.3GHz 20C 20T (3Y)' },
+
+                    { id: 'c-8', name: 'INTEL 1851 CORE ULTRA 9 285K', price: 19990, image: 'https://ihcupload.s3.ap-southeast-1.amazonaws.com/img/product/products63028_800.jpg', description: '3.2GHz 24C 24T (3Y)' },
+
+                    { id: 'c-9', name: 'INTEL 1700 CORE I9-14900K', price: 16890, image: 'https://ihcupload.s3.ap-southeast-1.amazonaws.com/img/product/product40475_800.jpg', description: '3.2GHz 24C 32T (3Y)' },
+
+                    { id: 'c-10', name: 'AMD AM5 RYZEN 7 7800X3D', price: 14590, image: 'https://ihcupload.s3.ap-southeast-1.amazonaws.com/img/product/product16311_800.jpg', description: '4.2 GHz 8C 16T' },
+
+                ]
+
+            },
+
+            mainboard: {
+
+                title: 'เมนบอร์ด (Mainboard)',
+
+                required: true,
+
+                items: [
+
+                    { id: 'm-0', name: '— ยังไม่ได้เลือก —', price: 0, image: 'https://tse2.mm.bing.net/th/id/OIP.luhWQJsFsLrgyfAqJqVEQAHaE8?rs=1&pid=ImgDetMain&o=7&rm=3', description: 'กรุณาเลือกเมนบอร์ด' },
+
+                    { id: 'm-1', name: 'MAINBOARD (AM4) ASROCK A520M-HVS', price: 1490, image: 'https://ihcupload.s3.ap-southeast-1.amazonaws.com/img/product/product7282_800.jpg', description: 'ASROCK' },
+
+                    { id: 'm-2', name: 'MAINBOARD (1700) GIGABYTE H610M K DDR4 ', price: 1690, image: 'https://ihcupload.s3.ap-southeast-1.amazonaws.com/img/product/products40588_800.jpg', description: 'สำหรับ Intel®' },
+
+                    { id: 'm-3', name: 'MAINBOARD (1700) MSI PRO H610M-E DDR5 ', price: 1990, image: 'https://ihcupload.s3.ap-southeast-1.amazonaws.com/img/product/product38440_800.png', description: 'สำหรับ Intel®' },
+
+                    { id: 'm-4', name: 'MAINBOARD (AM5) ASUS PRIME A620M-K ', price: 2290, image: 'https://ihcupload.s3.ap-southeast-1.amazonaws.com/img/product/products81108_800.png', description: 'สำหรับ AMD' },
+
+                    { id: 'm-5', name: 'MAINBOARD (1851) ASUS H810M-A-WIFI-CSM  ', price: 3700, image: 'https://ihcupload.s3.ap-southeast-1.amazonaws.com/img/product/products135015_800.jpg', description: 'สำหรับ Intel® H810' },
+
+                    { id: 'm-6', name: 'MAINBOARD (เมนบอร์ด)(1700) ASROCK B760M ', price: 2690, image: 'https://ihcupload.s3.ap-southeast-1.amazonaws.com/img/product/product32553_800.png', description: 'สำหรับ Intel® B760' },
+
+                    { id: 'm-7', name: 'MAINBOARD (เมนบอร์ด)(AM5) ASUS B650M  ', price: 5500, image: 'https://ihcupload.s3.ap-southeast-1.amazonaws.com/img/product/products77616_800.jpg', description: 'สำหรับ AMD B650' },
+
+                    { id: 'm-8', name: 'MAINBOARD (เมนบอร์ด)(1851) ASROCK B860   ', price: 6890, image: 'https://ihcupload.s3.ap-southeast-1.amazonaws.com/img/product/products135597_800.jpg', description: 'สำหรับ Intel® B860' },
+
+                    { id: 'm-9', name: 'MAINBOARD (เมนบอร์ด)(AM5) GIGABYTE X870  ', price: 5500, image: 'https://ihcupload.s3.ap-southeast-1.amazonaws.com/img/product/products71333_800.jpg', description: 'สำหรับ AMD X870' },
+
+                    { id: 'm-10', name: 'MAINBOARD (เมนบอร์ด)(1851) ASUS ROG ', price: 5500, image: 'https://ihcupload.s3.ap-southeast-1.amazonaws.com/img/product/products63138_800.jpg', description: 'สำหรับ Intel® Z890' },
+
+                ]
+
+            },
+
+            ram: {
+
+                title: 'แรม (RAM)',
+
+                required: true,
+
+                items: [
+
+                    { id: 'r-0', name: '— ยังไม่ได้เลือก —', price: 0, image: 'https://www.static-src.com/wcsstore/Indraprastha/images/catalog/full/catalog-image/109/MTA-176493394/no-brand_no-brand_full01.jpg', description: 'กรุณาเลือกหน่วยความจำ' },
+
+                    { id: 'r-1', name: 'RAM (แรม) APACER NOX 8GB  ', price: 1290, image: 'https://ihcupload.s3.ap-southeast-1.amazonaws.com/img/product/products134944_800.jpg', description: 'DDR4 3200MHz' },
+
+                    { id: 'r-2', name: 'RAM GeIL ORION PHANTOM GAMING 16GB  ', price: 2190, image: 'https://ihcupload.s3.ap-southeast-1.amazonaws.com/img/product/products73362_800.jpg', description: 'DDR4 3200MHz' },
+
+                    { id: 'r-3', name: 'RAM (แรม) GeIL ORION V RGB 32GB  ', price: 7790, image: 'https://ihcupload.s3.ap-southeast-1.amazonaws.com/img/product/products45193_800.jpg', description: 'DDR5 5600MHz' },
+
+                    { id: 'r-4', name: 'RAM CORSAIR DOMINATOR PLATINUM RGB 64GB  ', price: 18990, image: 'https://ihcupload.s3.ap-southeast-1.amazonaws.com/img/product/product7521_800.jpg', description: 'DDR5 5600MHz' },
+
+                    { id: 'r-5', name: 'RAM (แรม) GeIL ORION V 16GB  ', price: 3490, image: 'https://ihcupload.s3.ap-southeast-1.amazonaws.com/img/product/products55793_800.jpg', description: 'DDR5 5600MHz' },
+
+                ]
+
+            },
+
+            vga: {
+
+                title: 'การ์ดจอ (VGA Card)',
+
+                required: true,
+
+                items: [
+
+                    { id: 'v-0', name: '— ยังไม่ได้เลือก —', price: 0, image: 'https://i.pinimg.com/1200x/b8/01/32/b80132c30177f7b96cc03e09d1fb00cd.jpg', description: 'กรุณาเลือกการ์ดจอ' },
+
+                    { id: 'v-1', name: 'POWERCOLOR FIGHTER RADEON RX 6500 XT ', price: 4590, image: 'https://ihcupload.s3.ap-southeast-1.amazonaws.com/img/product/products103815_800.jpg', description: '4GB GDDR6' },
+
+                    { id: 'v-2', name: 'XFX SPEEDSTER SWFT210 RADEON RX 7600 CORE ', price: 7990, image: 'https://ihcupload.s3.ap-southeast-1.amazonaws.com/img/product/products125105_800.jpg', description: '8GB GDDR6' },
+
+                    { id: 'v-3', name: 'COLORFUL IGAME GEFORCE RTX 5050 ULTRA  ', price: 9190, image: 'https://ihcupload.s3.ap-southeast-1.amazonaws.com/img/product/products113230_800.jpg', description: '8GB GDDR6' },
+
+                    { id: 'v-4', name: 'MSI GEFORCE RTX 5070 VENTUS 2X OC WHITE ', price: 21490, image: 'https://ihcupload.s3.ap-southeast-1.amazonaws.com/img/product/products101800_800.jpg', description: '12GB GDDR7' },
+
+                    { id: 'v-5', name: 'MSI GEFORCE RTX 5070 VENTUS 3X OC ', price: 23690, image: 'https://ihcupload.s3.ap-southeast-1.amazonaws.com/img/product/products94225_800.jpg', description: '12GB GDDR7' },
+
+                    { id: 'v-6', name: 'POWERCOLOR HELLHOUND RADEON RX 9070 XT', price: 24900, image: 'https://ihcupload.s3.ap-southeast-1.amazonaws.com/img/product/products141997_800.jpg', description: '16GB GDDR6' },
+
+                    
+
+                ]
+
+            },
+
+            ssd: {
+
+                title: 'หน่วยเก็บข้อมูล (SSD/HDD)',
+
+                required: true,
+
+                items: [
+
+                    { id: 's-0', name: '— ยังไม่ได้เลือก —', price: 0, required: true, image: 'https://i.pinimg.com/736x/bf/32/33/bf3233e34cb1b1bcd02f6020847d8e9d.jpg', description: 'เลือก SSD สำหรับติดตั้งระบบปฏิบัติการ' },
+
+                    { id: 's-1', name: 'M.2 (เอสเอสดี) WD BLUE SN5000 500GB ', price: 1290, image: 'https://ihcupload.s3.ap-southeast-1.amazonaws.com/img/product/products106573_800.jpg', description: '' },
+
+                    { id: 's-2', name: 'M.2 (เอสเอสดี) KINGSTON NV3 500GB', price: 1490, image: 'https://ihcupload.s3.ap-southeast-1.amazonaws.com/img/product/products55857_800.jpg', description: '' },
+
+                    { id: 's-3', name: 'SSD (เอสเอสดี) APACER AS350X 1TB', price: 1990, image: 'https://ihcupload.s3.ap-southeast-1.amazonaws.com/img/product/product25452_800.jpg', description: '' },
+
+                    { id: 's-4', name: 'M.2 (เอสเอสดี) KLEVV CRAS C910 500GB', price: 1490, image: 'https://ihcupload.s3.ap-southeast-1.amazonaws.com/img/product/products135633_800.jpg', description: '' },
+
+                    { id: 's-5', name: 'M.2 (เอสเอสดี) ADATA LEGEND 900 PRO 1TB', price: 3290, image: 'https://ihcupload.s3.ap-southeast-1.amazonaws.com/img/product/products139285_800.jpg', description: '' },
+
+                    { id: 's-6', name: 'M.2 (เอสเอสดี) KINGSTON FURY RENEGADE 1TB', price: 6990, image: 'https://ihcupload.s3.ap-southeast-1.amazonaws.com/img/product/products135073_800.jpg', description: '' },
+
+                ]
+
+            },
+
+            psu: {
+
+                title: 'พาวเวอร์ซัพพลาย (PSU)',
+
+                required: true,
+
+                items: [
+
+                    { id: 'p-0', name: '— ยังไม่ได้เลือก —', price: 0, image: 'https://th.bing.com/th?id=OIF.Gu8phV%2bOUl0HI8Nk8hag3Q&rs=1&pid=ImgDetMain&o=7&rm=3', description: 'กรุณาเลือกพาวเวอร์ซัพพลาย' },
+
+                    { id: 'p-1', name: 'PSU (อุปกรณ์จ่ายไฟ) FSP HV+ 600W ', price: 1190, image: 'https://ihcupload.s3.ap-southeast-1.amazonaws.com/img/product/products91486_800.jpg', description: 'มาตรฐาน 80+WHITE' },
+
+                    { id: 'p-2', name: 'PSU (อุปกรณ์จ่ายไฟ) COOLER MASTER MWE GOLD V3 - 650W', price: 1890, image: 'https://ihcupload.s3.ap-southeast-1.amazonaws.com/img/product/products136998_800.jpg', description: 'มาตรฐาน 80+GOLD ' },
+
+                    { id: 'p-3', name: 'PSU PSU (อุปกรณ์จ่ายไฟ) MSI MAG A850GN PCIE5 850W', price: 2890, image: 'https://ihcupload.s3.ap-southeast-1.amazonaws.com/img/product/products139874_800.jpg', description: 'มาตรฐาน 80+GOLD ' },
+
+                    { id: 'p-4', name: 'PSU (อุปกรณ์จ่ายไฟ) ASUS PRIME 750W', price: 2490, image: 'https://ihcupload.s3.ap-southeast-1.amazonaws.com/img/product/products111344_800.jpg', description: 'มาตรฐาน 80+GOLD  ' },
+
+                    { id: 'p-5', name: 'PSU (อุปกรณ์จ่ายไฟ) ASUS TUF GAMING 850G - 850W', price: 4690, image: 'https://ihcupload.s3.ap-southeast-1.amazonaws.com/img/product/product12863_800.jpg', description: 'มาตรฐาน 80+GOLD  ' },
+
+                    { id: 'p-6', name: 'PSU (อุปกรณ์จ่ายไฟ) ENERMAX REVOLUTION D.F.X - 1050W', price: 4990, image: 'https://ihcupload.s3.ap-southeast-1.amazonaws.com/img/product/product38666_800.jpg', description: 'มาตรฐาน 80+GOLD  ' },
+
+                ]
+
+            },
+
+            case: {
+
+                title: 'เคส (Case)',
+
+                required: true,
+
+                items: [
+
+                    { id: 'ca-0', name: '— ยังไม่ได้เลือก —', price: 0, image: 'https://i.pinimg.com/736x/a6/2f/9c/a62f9caab1a69adc50cc6f5a6c13f345.jpg', description: 'กรุณาเลือกเคส' },
+
+                    { id: 'ca-1', name: 'CASE (เคส) iHAVECPU CRYSTAL Z6 MINI', price: 1490, image: 'https://ihcupload.s3.ap-southeast-1.amazonaws.com/img/product/products69499_800.jpg', description: '' },
+
+                    { id: 'ca-2', name: 'CASE (เคส) MSI MAG FORGE 320R AIRFLOW', price: 2190, image: 'https://ihcupload.s3.ap-southeast-1.amazonaws.com/img/product/products59165_800.jpg', description: 'เคส Micro-ATX ขนาดเล็ก' },
+
+                    { id: 'ca-3', name: 'CASE (เคส) GIGABYTE C102 GLASS ICE', price: 1290, image: 'https://ihcupload.s3.ap-southeast-1.amazonaws.com/img/product/products57887_800.jpg', description: 'เคส Micro-ATX ขนาดเล็ก' },
+
+                    { id: 'ca-4', name: 'CASE (เคส) iHAVECPU IHC 102 WOOD', price: 1490, image: 'https://ihcupload.s3.ap-southeast-1.amazonaws.com/img/product/products83415_800.jpg', description: 'เคส Micro-ATX ขนาดเล็ก' },
+
+                    { id: 'ca-5', name: 'CASE (เคส) HYTE Y70 14.9 TOUCH INFINITE', price: 16490, image: 'https://ihcupload.s3.ap-southeast-1.amazonaws.com/img/product/products85417_800.jpg', description: 'เคส Micro-ATX ขนาดเล็ก' },
+
+                    { id: 'ca-6', name: 'CASE (เคส) ASUS ROG STRIX HELIOS II', price: 12990, image: 'https://ihcupload.s3.ap-southeast-1.amazonaws.com/img/product/products137653_800.jpg', description: 'เคส Micro-ATX ขนาดเล็ก' },
+
+                ]
+
+            },
+
+            cooler: {
+
+                title: 'ชุดระบายความร้อน (Cooler)',
+
+                required: false,
+
+                items: [
+
+                    { id: 'cl-0', name: '— ไม่เลือก (ใช้ Stock Cooler) —', price: 0, image: 'https://i.pinimg.com/1200x/5e/00/7c/5e007c714cf2c1a68613b3f84d81cfc8.jpg', description: 'ไม่เพิ่มชุดระบายความร้อน' },
+
+                    { id: 'cl-1', name: 'AIR COOLER (ซิงค์ลม) ', price: 990, image: 'https://ihcupload.s3.ap-southeast-1.amazonaws.com/img/product/products130550_800.jpg', description: '' },
+
+                    { id: 'cl-2', name: 'LIQUID COOLER (ชุดน้ำปิด)', price: 5290, image: 'https://ihcupload.s3.ap-southeast-1.amazonaws.com/img/product/products58928_800.jpg', description: '' },
+
+                    { id: 'cl-3', name: 'FAN (พัดลม) NZXT F240 RGB CORE (WHITE) ', price: 1990, image: 'https://ihcupload.s3.ap-southeast-1.amazonaws.com/img/product/products74457_800.jpg', description: '' },
+
+                    { id: 'cl-4', name: 'FAN (พัดลม) ID-COOLING AF-127- ARGB WHITE ', price: 490, image: 'https://ihcupload.s3.ap-southeast-1.amazonaws.com/img/product/products82776_800.jpg', description: '' },
+
+                    { id: 'cl-5', name: 'LIQUID COOLER (ชุดน้ำปิด) ASUS TUF GAMING LC III 360 ', price: 6890, image: 'https://ihcupload.s3.ap-southeast-1.amazonaws.com/img/product/products123992_800.jpg', description: '' },
+
+                ]
+
+            },
+
+        };
+
+
+
+        let currentCategory = 'cpu'; // Still needed for logic, but not for rendering the left column
+
+        let selectedComponents = {};
+
+        let modalCurrentCategoryKey = null; // NEW: To track which category is open in the modal
+
+       
+
+        // Helper function to format price to Thai Baht
+
+        function formatPrice(price) {
+
+            return '฿' + (price || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+        }
+
+        
+
+        // NEW: Function for creating a non-blocking toast notification (Kept for Warning/Error messages)
+
+        function createToast(message, type = 'success') {
+
+            // 1. ตรวจสอบและลบ Toast เก่าที่อาจจะยังค้างอยู่
+
+            const existingToast = document.getElementById('toast-notification');
+
+            if (existingToast) {
+
+                existingToast.remove();
+
+            }
+
+
+
+            // Determine icons and colors based on type
+
+            let iconClass = 'fas fa-check-circle';
+
+            let iconColor = 'text-secondary'; // Default success/accent color (Red)
+
+
+
+            if (type === 'warning') {
+
+                iconClass = 'fas fa-exclamation-triangle';
+
+                iconColor = 'text-yellow-500'; // Warning color
+
+            }
+
+            
+
+            // 2. สร้าง Toast Element ด้วย Tailwind classes
+
+            const toast = document.createElement('div');
+
+            toast.id = 'toast-notification';
+
+            // Fixed bottom-5 right-5 position
+
+            toast.className = 'fixed bottom-5 right-5 z-50 bg-dark border border-secondary text-white p-4 rounded-lg shadow-2xl transition-opacity duration-300 ease-out transform translate-y-full opacity-0 max-w-sm';
+
+            toast.innerHTML = `
+
+                <div class="flex items-center space-x-3">
+
+                    <i class="${iconClass} ${iconColor} text-xl"></i>
+
+                    <span class="font-bold text-base">${message}</span>
+
+                </div>
+
+            `;
+
+
+
+            document.body.appendChild(toast);
+
+
+
+            // 3. แสดง Toast (ใช้ setTimeout เพื่อให้เกิด animation)
+
+            setTimeout(() => {
+
+                toast.style.transform = 'translateY(0)';
+
+                toast.style.opacity = '1';
+
+            }, 10); // หน่วงเล็กน้อยเพื่อให้ DOM Render ก่อน
+
+
+
+            // 4. ซ่อนและลบ Toast หลังจาก 3 วินาที
+
+            setTimeout(() => {
+
+                toast.style.transform = 'translateY(100%)';
+
+                toast.style.opacity = '0';
+
+                // ลบ element ออกจาก DOM หลังจาก animation เสร็จ
+
+                toast.addEventListener('transitionend', () => {
+
+                    if (toast.parentElement) {
+
+                        toast.remove();
+
+                    }
+
+                });
+
+            }, 3000); // 3 วินาที
+
+        }
+
+        
+
+        // NEW: Function for creating a centered Modal Pop-up (Dialog) for success - สำหรับแจ้งเพิ่มสเปคลงตะกร้า
+
+        function createModal(specName, totalPriceFormatted) {
+
+            const existingModal = document.getElementById('spec-modal-notification');
+
+            if (existingModal) {
+
+                existingModal.remove();
+
+            }
+
+
+
+            // 1. Modal Overlay (พื้นหลังทึบ)
+
+            const overlay = document.createElement('div');
+
+            overlay.id = 'spec-modal-notification';
+
+            overlay.className = 'fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 backdrop-blur-sm transition-opacity duration-300 opacity-0';
+
+
+
+            // 2. Modal Content (กล่องข้อความ)
+
+            const modalContent = document.createElement('div');
+
+            modalContent.className = 'bg-light border border-secondary p-8 rounded-xl shadow-2xl max-w-md w-full transform scale-75 transition-transform duration-300';
+
+            
+
+            // สร้างข้อความและปุ่ม
+
+            modalContent.innerHTML = `
+
+                <div class="text-center">
+
+                    <i class="fas fa-check-circle text-secondary text-5xl mb-4 animate-bounce"></i>
+
+                    <h3 class="text-3xl font-bold mb-2 text-white">สเปคถูกเพิ่มลงตะกร้าแล้ว!</h3>
+
+                    <p class="text-lg text-gray-300 mb-2"><strong>สเปค:</strong> ${specName}</p>
+
+                    <p class="text-2xl font-extrabold text-price-new mb-6"><strong>ราคารวม:</strong> ${totalPriceFormatted}</p>
+
+                    <div class="flex justify-center space-x-4">
+
+                        <button onclick="document.getElementById('spec-modal-notification').remove()" class="bg-gray-700 text-white font-semibold py-2 px-6 rounded-lg hover:bg-gray-600 transition">
+
+                            จัดสเปคต่อ
+
+                        </button>
+
+                        <a href="cart.html" class="bg-secondary text-white font-semibold py-2 px-6 rounded-lg hover:bg-red-700 transition">
+
+                            ไปที่ตะกร้า <i class="fas fa-shopping-cart ml-2"></i>
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            `;
+
+
+
+            overlay.appendChild(modalContent);
+
+            document.body.appendChild(overlay);
+
+
+
+            // แสดง Modal ด้วย Animation
+
+            setTimeout(() => {
+
+                overlay.style.opacity = '1';
+
+                modalContent.style.transform = 'scale(1)';
+
+            }, 10);
+
+        }
+
+
+
+        // 1. NEW FUNCTION: Render All-in-One Spec List
+
+        function renderFullSpecList() {
+
+            const container = document.getElementById('full-spec-list');
+
+            container.innerHTML = '';
+
+           
+
+            Object.keys(componentsData).forEach(key => {
+
+                const category = componentsData[key];
+
+                const selectedItem = selectedComponents[key];
+
+               
+
+                const isSelected = selectedItem && selectedItem.id !== category.items[0].id;
+
+                const requiredTag = category.required ? '<span class="text-secondary ml-2 text-sm font-normal">(จำเป็น)</span>' : '';
+
+                const selectedName = isSelected ? selectedItem.name : category.items[0].name;
+
+                const selectedPrice = isSelected ? formatPrice(selectedItem.price) : '—';
+
+                const statusClass = isSelected ? 'text-price-new' : category.required ? 'text-secondary' : 'text-gray-400';
+
+        
+
+                const buttonText = isSelected ? 'เปลี่ยนสินค้า' : 'เลือกสินค้า';
+
+                const buttonStyle = isSelected ? 'bg-secondary hover:bg-[#0097a7]' : 'bg-gray-700 hover:bg-gray-600'; // New button style
+
+
+
+                const listItem = document.createElement('div');
+
+                // Use the new custom class and Tailwind classes
+
+                listItem.className = 'spec-item-row p-4 rounded-xl flex items-center justify-between transition duration-200';
+
+                listItem.innerHTML = `
+
+                    <div class="flex items-center space-x-6 w-7/12">
+
+                        <div class="img-container w-16 h-16 flex-shrink-0 p-2 border border-gray-700">
+
+                            <img src="${selectedItem.image}" alt="${category.title}" class="max-w-full max-h-full object-contain">
+
+                        </div>
+
+                        <div>
+
+                            <h4 class="text-lg font-bold text-white flex items-center">${category.title} ${requiredTag}</h4>
+
+                            <p class="text-md font-medium truncate ${statusClass} mt-1">${selectedName}</p>
+
+                        </div>
+
+                    </div>
+
+                   
+
+                    <div class="flex items-center justify-end space-x-4 w-5/12">
+
+                        <span class="text-2xl font-extrabold ${statusClass} flex-shrink-0">${selectedPrice}</span>
+
+                        <button onclick="openSelectionModal('${key}')" class="${buttonStyle} text-white font-semibold py-2 px-4 rounded-full transition flex-shrink-0 text-sm shadow-lg">
+
+                            <i class="fas fa-edit mr-1"></i> ${buttonText}
+
+                        </button>
+
+                    </div>
+
+                `;
+
+                container.appendChild(listItem);
+
+            });
+
+        }
+
+       
+
+        // 2. NEW FUNCTION: Open Selection Modal
+
+        function openSelectionModal(categoryKey) {
+
+            modalCurrentCategoryKey = categoryKey;
+
+            const modal = document.getElementById('selection-modal');
+
+            const category = componentsData[categoryKey];
+
+            const selectedItem = selectedComponents[categoryKey];
+
+            const listContainer = document.getElementById('modal-item-list');
+
+           
+
+            document.getElementById('modal-title').textContent = `เลือก ${category.title}`;
+
+            listContainer.innerHTML = '';
+
+           
+
+            listContainer.innerHTML = category.items.map(item => {
+
+                const isSelected = selectedItem && selectedItem.id === item.id;
+
+                const cardClass = isSelected ? 'selected' : '';
+
+                const priceHtml = item.price > 0
+
+                    ? `<span class="text-2xl font-extrabold text-price-new">${formatPrice(item.price)}</span>` // Bigger price
+
+                    : `<span class="text-gray-400">ไม่เพิ่ม/ไม่ได้เลือก</span>`;
+
+
+
+                // Modernized card structure
+
+                return `
+
+                    <div class="modal-card rounded-xl shadow-xl hover:shadow-2xl transition duration-300 relative p-4 ${cardClass}" onclick="selectComponent('${categoryKey}', '${item.id}')">
+
+                        <div class="h-32 flex items-center justify-center mb-3 p-3 bg-light rounded-lg">
+
+                            <img src="${item.image}" alt="${item.name}" class="max-h-full max-w-full object-contain">
+
+                        </div>
+
+                        <h4 class="text-lg font-bold h-12 overflow-hidden mb-1">${item.name}</h4>
+
+                        <p class="text-sm text-gray-400 h-10 overflow-hidden mb-3">${item.description}</p>
+
+                        <div class="flex flex-col mt-3 border-t border-gray-700 pt-3">
+
+                            ${priceHtml}
+
+                        </div>
+
+                        ${isSelected ? `<div class="absolute top-2 right-2 text-secondary text-2xl"><i class="fas fa-check-circle"></i></div>` : ''}
+
+                        <button class="mt-4 w-full ${isSelected ? 'bg-secondary hover:bg-[#0097a7]' : 'bg-gray-600 hover:bg-gray-500'} text-white font-bold py-2 rounded-lg transition text-md">
+
+                            ${isSelected ? 'เลือกอยู่' : 'เลือกสินค้า'}
+
+                        </button>
+
+                    </div>
+
+                `;
+
+            }).join('');
+
+
+
+            modal.style.display = 'block';
+
+        }
+
+
+
+        // NEW FUNCTION: Close Modal when clicking outside the content
+
+        function closeModal(event) {
+
+            const modal = document.getElementById('selection-modal');
+
+            if (event.target === modal) {
+
+                modal.style.display = 'none';
+
+            }
+
+        }
+
+
+
+        // 3. Select Component (Modified to close modal and re-render full list)
+
+        function selectComponent(categoryKey, itemId) {
+
+            const category = componentsData[categoryKey];
+
+            const item = category.items.find(i => i.id === itemId);
+
+           
+
+            if (item) {
+
+                selectedComponents[categoryKey] = item;
+
+                renderFullSpecList(); // Re-render the main list
+
+                updateSummary();
+
+                document.getElementById('selection-modal').style.display = 'none'; // Close modal after selection
+
+            }
+
+        }
+
+
+
+        // 4. Update Right Column: Summary (Keep, but remove category re-render call)
+
+        function updateSummary() {
+
+            const summaryList = document.getElementById('summary-list');
+
+            let totalPrice = 0;
+
+            let allRequiredSelected = true;
+
+
+
+            summaryList.innerHTML = '';
+
+
+
+            Object.keys(componentsData).forEach(key => {
+
+                const category = componentsData[key];
+
+                const selectedItem = selectedComponents[key];
+
+               
+
+                const isSelected = selectedItem && selectedItem.id !== category.items[0].id;
+
+               
+
+                if (isSelected) {
+
+                    totalPrice += selectedItem.price;
+
+                } else if (category.required) {
+
+                    allRequiredSelected = false;
+
+                }
+
+
+
+                const statusClass = isSelected ? 'text-price-new' : category.required ? 'text-secondary' : 'text-gray-400';
+
+                const statusText = isSelected ? formatPrice(selectedItem.price) : category.required ? 'ต้องเลือก' : 'ไม่เพิ่ม';
+
+
+
+                const listItem = document.createElement('div');
+
+                // Added onclick to quickly jump to the component selection if needed
+
+                listItem.className = 'flex justify-between items-center border-b border-gray-800 py-3 cursor-pointer hover:bg-gray-800/50 p-1 -mx-1 rounded transition';
+
+                listItem.setAttribute('onclick', `openSelectionModal('${key}')`);
+
+                listItem.innerHTML = `
+
+                    <div>
+
+                        <span class="font-semibold text-base text-gray-300">${category.title}</span>
+
+                        <p class="text-sm text-gray-500 truncate max-w-40">${isSelected ? selectedItem.name : category.items[0].name}</p>
+
+                    </div>
+
+                    <span class="font-bold text-lg ${statusClass} text-right">${statusText}</span>
+
+                `;
+
+                summaryList.appendChild(listItem);
+
+            });
+
+
+
+            document.getElementById('total-price').textContent = formatPrice(totalPrice);
+
+
+
+            const cartBtn = document.getElementById('add-to-cart-btn');
+
+            if (allRequiredSelected && totalPrice > 0) {
+
+                cartBtn.disabled = false;
+
+                cartBtn.textContent = 'เพิ่มสเปคนี้ลงตะกร้า';
+
+                cartBtn.className = 'w-full bg-secondary text-white font-bold py-3 rounded-lg hover:bg-[#0097a7] transition shadow-xl'; // Updated color and shadow
+
+            } else {
+
+                cartBtn.disabled = true;
+
+                cartBtn.textContent = 'กรุณาเลือกส่วนประกอบที่จำเป็น';
+
+                cartBtn.className = 'w-full bg-secondary text-white font-bold py-3 rounded-lg hover:bg-red-700 transition disabled:opacity-50'; // Keep original disabled style
+
+            }
+
+        }
+
+
+
+        // 5. Add to Cart Logic for Custom PC Spec (MODIFIED to use createModal for success)
+
+        function addToCartSpec() {
+
+            const specNameInput = document.getElementById('spec-name');
+
+            const specName = specNameInput.value.trim() || `คอมสเปคใหม่ (${new Date().toLocaleDateString('th-TH')})`;
+
+            const totalPriceElement = document.getElementById('total-price');
+
+            const totalPrice = parseFloat(totalPriceElement.textContent.replace('฿', '').replace(/,/g, ''));
+
+
+
+            if (totalPrice === 0 || document.getElementById('add-to-cart-btn').disabled) {
+
+                // MODIFIED: Use createToast for warning (KEEPING TOAST FOR WARNINGS)
+
+                createToast('กรุณาเลือกส่วนประกอบที่จำเป็นก่อนเพิ่มลงตะกร้า', 'warning');
+
+                return;
+
+            }
+
+
+
+            const cart = JSON.parse(localStorage.getItem('cartItems')) || [];
+
+           
+
+            const componentDetails = {};
+
+            Object.keys(selectedComponents).forEach(key => {
+
+                const item = selectedComponents[key];
+
+                if (item.id !== componentsData[key].items[0].id) {
+
+                    componentDetails[componentsData[key].title] = item.name;
+
+                }
+
+            });
+
+
+
+            cart.push({
+
+                name: specName,
+
+                price: totalPrice,
+
+                quantity: 1,
+
+                type: 'Custom PC',
+
+                details: componentDetails
+
+            });
+
+
+
+            localStorage.setItem('cartItems', JSON.stringify(cart));
+
+            // *** MODIFIED: Use createModal for success ***
+
+            createModal(specName, formatPrice(totalPrice));
+
+            updateCartIcon();
+
+        }
+
+
+
+        // 6. Function to update the cart icon count across all pages (Keep)
+
+        function updateCartIcon() {
+
+            const cart = JSON.parse(localStorage.getItem('cartItems')) || [];
+
+            const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
+
+            const cartCountElement = document.getElementById('cart-count');
+
+            if (cartCountElement) {
+
+                cartCountElement.textContent = totalItems;
+
+                cartCountElement.style.display = totalItems > 0 ? 'flex' : 'none';
+
+            }
+
+        }
+
+
+
+        // Initialize the app on page load (MODIFIED)
+
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // Initialize selectedComponents to default items
+
+            Object.keys(componentsData).forEach(key => {
+
+                selectedComponents[key] = componentsData[key].items[0];
+
+            });
+
+
+
+            renderFullSpecList(); // NEW: Call the full list render function
+
+            updateSummary();
+
+            updateCartIcon();
+
+        });
+
+    </script>
+
+
+
+</body>
+
+</html>

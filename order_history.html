@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ประวัติการสั่งซื้อ - SLOWLY</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        /* Custom Styles and Variables (Consistent) */
+        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;700;800&display=swap');
+        :root {
+            --primary: #000;
+            --secondary: #d90000; 
+            --dark-bg: #1a1a1a;
+            --light-bg: #2a2a2a;
+            --price-new: #f7a000; 
+            --subtle-line: #333;
+        }
+        /* Styles to allow page scrolling when modal is closed */
+        body { 
+            font-family: 'Kanit', sans-serif; 
+            background-color: var(--primary); 
+            color: white; 
+            min-height: 100vh; 
+            display: flex; 
+            flex-direction: column;
+            transition: overflow 0.3s; 
+        }
+        .bg-dark { background-color: var(--dark-bg); }
+        .bg-light { background-color: var(--light-bg); }
+        .text-secondary { color: var(--secondary); }
+        .text-price-new { color: var(--price-new); }
+
+        /* Status Pill Styling (Consistent) */
+        .status-pill {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        .status-รอการตรวจสอบ { background-color: #f7a000; color: #1a1a1a; } 
+        .status-จัดส่งแล้ว { background-color: #10b981; color: white; } 
+        .status-ยกเลิกแล้ว { background-color: #ef4444; color: white; } 
+        .status-N-A { background-color: #4b5563; color: white; } 
+
+        /* Custom Modal Styles (for Order Details Modal) */
+        .modal {
+            background-color: rgba(0, 0, 0, 0.7);
+            transition: opacity 0.3s ease-in-out;
+            visibility: hidden;
+            opacity: 0;
+            overflow-y: auto; 
+        }
+        .modal.open {
+            visibility: visible;
+            opacity: 1;
+        }
+        .modal-content {
+            transform: translateY(-50px);
+            transition: transform 0.3s ease-in-out;
+            max-height: 90vh; 
+        }
+        .modal.open .modal-content {
+            transform: translateY(0);
+        }
+        
+        /* **NEW:** SweetAlert2 Custom Styling for Dark Theme */
+        .swal2-popup {
+            background-color: var(--dark-bg) !important;
+            color: white !important;
+            border: 1px solid var(--subtle-line);
+        }
+        .swal2-title {
+            color: white !important;
+            font-family: 'Kanit', sans-serif !important;
+            font-weight: 700 !important;
+        }
+        .swal2-html-container {
+            font-family: 'Kanit', sans-serif !important;
+            color: #ccc !important;
+        }
+        .swal2-confirm {
+            background-color: var(--secondary) !important;
+            font-family: 'Kanit', sans-serif !important;
+            border: none !important;
+        }
+        .swal2-cancel {
+            background-color: var(--light-bg) !important;
+            color: #ccc !important;
+            font-family: 'Kanit', sans-serif !important;
+            border: 1px solid var(--subtle-line) !important;
+        }
+    </style>
+</head>
+<body class="bg-primary">
+
+<header class="bg-dark shadow-xl">
+        <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="text-4xl font-extrabold" style="font-family: serif; letter-spacing: 1px;">
+                <a href="index.html" class="text-white">SLOWLY</a>
+            </div>
+            <div class="flex space-x-4">
+                <a href="cart.html" class="text-white text-lg hover:text-price-new transition">
+                    <i class="fas fa-shopping-cart mr-2"></i> กลับไปหน้าตะกร้า
+                </a>
+                <a href="index.html" class="text-white text-lg hover:text-secondary transition">
+                    <i class="fas fa-home mr-2"></i> กลับหน้าหลัก
+                </a>
+            </div>
+        </div>
+    </header> 
+
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <h1 class="text-4xl font-extrabold mb-8 text-white border-b border-gray-700 pb-3">
+            <i class="fas fa-history text-secondary mr-3"></i> ประวัติการสั่งซื้อของฉัน
+        </h1>
+
+        <div class="flex justify-end mb-6 space-x-3">
+            <button onclick="clearAllHistory()" class="px-4 py-2 text-sm text-red-400 border border-red-400 rounded-lg hover:bg-red-900/50 transition">
+                <i class="fas fa-trash-alt mr-2"></i> ล้างประวัติทั้งหมด
+            </button>
+            <button onclick="renderOrderHistory()" class="px-4 py-2 text-sm text-white bg-light rounded-lg hover:bg-gray-700 transition">
+                <i class="fas fa-sync-alt mr-2"></i> รีเฟรช
+            </button>
+        </div>
+
+        <div class="bg-dark rounded-xl shadow-xl overflow-hidden">
+            <div class="hidden md:grid grid-cols-6 lg:grid-cols-7 gap-4 p-4 text-sm font-semibold text-gray-400 border-b border-gray-700">
+                <div class="col-span-1"># คำสั่งซื้อ</div>
+                <div class="col-span-2">วันที่สั่งซื้อ</div>
+                <div class="col-span-2">สถานะ</div>
+                <div class="col-span-1 text-right">ยอดรวม</div>
+                <div class="col-span-1 text-right">รายละเอียด</div>
+            </div>
+
+            <div id="order-history-container" class="divide-y divide-gray-700">
+                </div>
+        </div>
+        
+    </main>
+    
+    <div id="order-details-modal" class="modal fixed inset-0 z-50 flex items-center justify-center p-4" onclick="closeModal()">
+        <div class="modal-content bg-dark w-full max-w-3xl rounded-xl shadow-2xl overflow-hidden" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center p-5 bg-light border-b border-gray-700">
+                <h2 class="text-2xl font-bold text-white"><i class="fas fa-box-open text-secondary mr-2"></i> รายละเอียดคำสั่งซื้อ <span id="modal-order-id" class="text-price-new"></span></h2>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-white transition">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+
+            <div class="p-5 space-y-6 overflow-y-auto max-h-[80vh]">
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 border-b border-gray-700 pb-4">
+                    <div>
+                        <p class="text-sm text-gray-400">วันที่สั่งซื้อ</p>
+                        <p id="modal-date" class="font-semibold"></p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-400">วิธีการชำระเงิน</p>
+                        <p id="modal-payment" class="font-semibold text-price-new"></p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-400">สถานะ</p>
+                        <span id="modal-status" class="status-pill status-N-A">N/A</span>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-xl font-bold text-secondary mb-3"><i class="fas fa-shipping-fast mr-2"></i> ข้อมูลจัดส่ง</h3>
+                    <div class="bg-light p-4 rounded-lg text-sm space-y-1">
+                        <p><span class="text-gray-400">ชื่อผู้รับ:</span> <span id="modal-shipping-name" class="font-semibold"></span></p>
+                        <p><span class="text-gray-400">โทรศัพท์:</span> <span id="modal-shipping-tel" class="font-semibold"></span></p>
+                        <p><span class="text-gray-400">อีเมล:</span> <span id="modal-shipping-email" class="font-semibold"></span></p>
+                        <div class="pt-2">
+                            <p class="text-gray-400">ที่อยู่จัดส่ง:</p>
+                            <p id="modal-shipping-address" class="font-semibold whitespace-pre-wrap"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-xl font-bold text-secondary mb-3"><i class="fas fa-list-ul mr-2"></i> รายการสินค้า</h3>
+                    <div id="modal-item-list" class="bg-light p-4 rounded-lg divide-y divide-gray-700">
+                        </div>
+                </div>
+
+                <div class="flex justify-between items-center pt-4 border-t border-gray-700">
+                    <p class="text-2xl font-extrabold text-white">ยอดชำระสุทธิ:</p>
+                    <p id="modal-total" class="text-3xl font-extrabold text-price-new"></p>
+                </div>
+                <div class="flex justify-end pt-3">
+                    <button id="modal-cancel-btn" onclick="" class="bg-red-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-red-700 transition hidden">
+                        <i class="fas fa-times-circle mr-2"></i> ยกเลิกคำสั่งซื้อ
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="toast-container" class="fixed top-5 right-5 z-50 space-y-2"></div>
+
+    <footer class="bg-gray-950 mt-12 pt-10 pb-4 text-white">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 border-b border-gray-800 pb-8">
+                <div>
+                    <h3 class="text-2xl font-extrabold mb-4" style="font-family: serif;">SLOWLY</h3>
+                    <p class="text-sm text-gray-400">ร้านค้าอุปกรณ์คอมพิวเตอร์และบริการจัดสเปคคอม</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">บริการ</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="build_pc.html" class="text-gray-400 hover:text-secondary transition">จัดสเปคคอม</a></li>
+                        <li><a href="set_pc.html" class="text-gray-400 hover:text-secondary transition">คอมเซ็ตพร้อมเล่น</a></li>
+                        <li><a href="promo.html" class="text-gray-400 hover:text-secondary transition">โปรโมชั่น</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">ช่วยเหลือ</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="text-gray-400 hover:text-secondary transition">วิธีการสั่งซื้อ</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-secondary transition">นโยบายการรับประกัน</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-secondary transition">นโยบายความเป็นส่วนตัว</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">ติดต่อเรา</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li class="flex items-center">
+                            <i class="fas fa-map-marker-alt text-secondary mr-3"></i>
+                            <span class="text-gray-400">วิทยาลัยเทคนิคยะลา</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-phone text-secondary mr-3"></i>
+                            <span class="text-gray-400">099-999-9999</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope text-secondary mr-3"></i>
+                            <span class="text-gray-400">123456@gmail.com</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mt-10 border-t border-gray-800 pt-6 flex flex-col md:flex-row items-center justify-between">
+                <div class="flex space-x-6 mb-4 md:mb-0">
+                    <a href="#" class="text-gray-400 hover:text-secondary transition text-xl"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-secondary transition text-xl"><i class="fab fa-line"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-secondary transition text-xl"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-secondary transition text-xl"><i class="fab fa-youtube"></i></a>
+                </div>
+                <p class="text-sm text-gray-500 text-center">
+                    &copy; 2025 SLOWLY. COMPUTER.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // ===========================================
+        // CENTRALIZED UTILITY FUNCTIONS
+        // ===========================================
+
+        function formatPrice(price) {
+            return '฿' + (price || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }
+
+        // Keep createToast for general, non-critical notices (optional)
+        function createToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            if (!container) return; 
+            const toast = document.createElement('div');
+            let bgColor = 'bg-green-600';
+            let icon = 'fas fa-check-circle';
+            if (type === 'warning' || type === 'alert') {
+                bgColor = 'bg-red-600';
+                icon = 'fas fa-exclamation-triangle';
+            } else if (type === 'info') {
+                bgColor = 'bg-blue-600';
+                icon = 'fas fa-info-circle';
+            }
+            toast.className = `flex items-center p-4 rounded-lg shadow-xl text-white ${bgColor} transition-opacity duration-300`;
+            toast.style.opacity = '1';
+            toast.innerHTML = `<i class="${icon} mr-2"></i><span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // **MODIFIED:** showAlert now uses SweetAlert2 for beautiful, centered popups
+        function showAlert(message, type = 'alert', onConfirm = () => {}) {
+            let iconType = 'info';
+            let confirmButton = true;
+            let cancelButton = false;
+            let title = 'แจ้งเตือน';
+
+            if (type === 'confirm') {
+                iconType = 'warning';
+                title = 'ยืนยันการดำเนินการ';
+                confirmButton = true;
+                cancelButton = true;
+            } else if (type === 'success') {
+                iconType = 'success';
+                title = 'สำเร็จ';
+                confirmButton = false;
+            } else if (type === 'warning' || type === 'alert') {
+                iconType = 'error';
+                title = 'ผิดพลาด';
+                confirmButton = true;
+                cancelButton = false;
+            }
+
+            Swal.fire({
+                title: title,
+                html: message,
+                icon: iconType,
+                showCancelButton: cancelButton,
+                confirmButtonText: cancelButton ? 'ตกลง/ยืนยัน' : 'ปิด',
+                cancelButtonText: 'ยกเลิก',
+                reverseButtons: true,
+                customClass: {
+                    popup: 'swal2-popup',
+                    title: 'swal2-title',
+                    htmlContainer: 'swal2-html-container',
+                    confirmButton: 'swal2-confirm',
+                    cancelButton: 'swal2-cancel'
+                }
+            }).then((result) => {
+                if (result.isConfirmed && type === 'confirm') {
+                    onConfirm();
+                }
+            });
+        }
+        
+        function updateCartIcon() {
+            const cart = JSON.parse(localStorage.getItem('cartItems')) || [];
+            const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
+            const cartCountElement = document.getElementById('cart-count');
+            if (cartCountElement) {
+                cartCountElement.textContent = totalItems;
+                cartCountElement.style.display = totalItems > 0 ? 'flex' : 'none';
+            }
+        }
+
+
+        // ===========================================
+        // MODAL AND DETAIL LOGIC (คงเดิมจากที่แก้ไข Scroll)
+        // ===========================================
+        
+        function closeModal() {
+            document.getElementById('order-details-modal').classList.remove('open');
+            document.body.style.overflow = '';
+        }
+        
+        function showOrderDetails(order) {
+            document.body.style.overflow = 'hidden'; 
+            
+            const statusClass = (order.status || 'N-A').replace(/\s/g, '').replace(':', '');
+            
+            // ... (Code to populate modal content is unchanged) ...
+            document.getElementById('modal-order-id').textContent = `#${order.id}`;
+            document.getElementById('modal-date').textContent = order.date;
+            document.getElementById('modal-payment').textContent = order.paymentMethod || 'N/A';
+            document.getElementById('modal-total').textContent = formatPrice(order.totalPrice);
+            
+            const statusElement = document.getElementById('modal-status');
+            statusElement.textContent = order.status;
+            statusElement.className = `status-pill status-${statusClass}`;
+            
+            document.getElementById('modal-shipping-name').textContent = order.shipping.name || 'N/A';
+            document.getElementById('modal-shipping-tel').textContent = order.shipping.tel || 'N/A';
+            document.getElementById('modal-shipping-email').textContent = order.shipping.email || 'N/A';
+            document.getElementById('modal-shipping-address').textContent = order.shipping.address || 'N/A';
+
+            const itemListContainer = document.getElementById('modal-item-list');
+            itemListContainer.innerHTML = ''; 
+
+            order.items.forEach(item => {
+                const isCustomPC = item.type && item.type.includes('Custom PC');
+                const itemSubtotal = formatPrice(item.price * item.quantity);
+                
+                let detailsHTML = '';
+                if (isCustomPC && item.details) {
+                    const componentList = Object.entries(item.details).map(([key, detail]) => 
+                        `<li class="text-xs text-gray-400 ml-4 list-disc list-inside">
+                            <span class="font-semibold">${key}</span>: ${detail.name}
+                        </li>`
+                    ).join('');
+                    detailsHTML = `<ul class="mt-1 space-y-0.5">${componentList}</ul>`;
+                }
+
+                itemListContainer.innerHTML += `
+                    <div class="flex justify-between items-start py-3">
+                        <div class="flex-grow">
+                            <p class="text-white text-base font-medium">
+                                ${item.name} <span class="text-secondary text-sm">x${item.quantity}</span>
+                            </p>
+                            ${detailsHTML}
+                        </div>
+                        <span class="text-white text-base font-semibold">${itemSubtotal}</span>
+                    </div>
+                `;
+            });
+            
+            const cancelBtn = document.getElementById('modal-cancel-btn');
+            if (order.status === 'รอการตรวจสอบ') {
+                cancelBtn.classList.remove('hidden');
+                cancelBtn.onclick = () => {
+                    closeModal(); 
+                    cancelOrder(order.id);
+                };
+            } else {
+                cancelBtn.classList.add('hidden');
+            }
+
+            document.getElementById('order-details-modal').classList.add('open');
+        }
+
+        // ===========================================
+        // CORE HISTORY LOGIC
+        // ===========================================
+
+        function renderOrderHistory() {
+            const container = document.getElementById('order-history-container');
+            const history = JSON.parse(localStorage.getItem('orderHistory')) || [];
+            container.innerHTML = '';
+
+            if (history.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center p-12 bg-dark rounded-xl shadow-lg">
+                        <i class="fas fa-box-open text-6xl text-gray-500 mb-4"></i>
+                        <p class="text-xl text-gray-400 font-semibold">คุณยังไม่มีประวัติการสั่งซื้อ</p>
+                        <p class="text-sm text-gray-500 mt-2">คำสั่งซื้อที่เสร็จสมบูรณ์จะปรากฏที่นี่</p>
+                        <a href="index.html" class="mt-4 inline-block bg-secondary text-white font-bold py-2 px-4 rounded-lg hover:bg-red-700 transition">
+                            กลับไปเลือกซื้อสินค้า
+                        </a>
+                    </div>
+                `;
+                document.querySelector('.bg-dark.rounded-xl.shadow-xl').classList.add('hidden');
+                return;
+            }
+            document.querySelector('.bg-dark.rounded-xl.shadow-xl').classList.remove('hidden');
+
+
+            history.forEach(order => {
+                const status = order.status || 'N/A';
+                const statusClass = status.replace(/\s/g, '').replace(':', ''); 
+
+                // Note: The click handler passes the entire JSON object of the order
+                const orderItemHTML = `
+                    <div class="grid grid-cols-2 md:grid-cols-6 lg:grid-cols-7 gap-4 p-4 hover:bg-light transition cursor-pointer" onclick="showOrderDetails(JSON.parse(decodeURIComponent('${encodeURIComponent(JSON.stringify(order))}')))">
+                        
+                        <div class="col-span-1">
+                            <span class="text-sm text-gray-400 block md:hidden">#</span>
+                            <span class="text-base font-extrabold text-white">#${order.id}</span>
+                        </div>
+
+                        <div class="col-span-1 md:col-span-2">
+                            <span class="text-sm text-gray-400 block md:hidden">วันที่สั่ง</span>
+                            <span class="text-sm text-gray-300">${order.date}</span>
+                        </div>
+                        
+                        <div class="col-span-1 md:col-span-2">
+                            <span class="text-sm text-gray-400 block md:hidden">สถานะ</span>
+                            <span class="status-pill status-${statusClass}">${status}</span>
+                        </div>
+
+                        <div class="col-span-1 text-right">
+                            <span class="text-sm text-gray-400 block md:hidden">ยอดรวม</span>
+                            <span class="text-lg font-extrabold text-price-new">${formatPrice(order.totalPrice)}</span>
+                        </div>
+                        
+                        <div class="col-span-1 text-right hidden lg:block">
+                            <button class="text-xs font-medium text-secondary hover:underline transition focus:outline-none py-1 px-3 bg-light rounded-full">
+                                <i class="fas fa-search-plus"></i> ดู
+                            </button>
+                        </div>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', orderItemHTML);
+            });
+            updateCartIcon(); 
+        }
+
+        /**
+         * Logic to cancel an order (uses new showAlert/SweetAlert2).
+         */
+        function cancelOrder(orderId) {
+            showAlert(`คุณแน่ใจหรือไม่ที่จะยกเลิกคำสั่งซื้อ #${orderId}?`, 'confirm', () => {
+                const history = JSON.parse(localStorage.getItem('orderHistory')) || [];
+                const orderIndex = history.findIndex(order => order.id === orderId);
+
+                if (orderIndex !== -1) {
+                    if (history[orderIndex].status === "รอการตรวจสอบ") {
+                        history[orderIndex].status = "ยกเลิกแล้ว";
+                        localStorage.setItem('orderHistory', JSON.stringify(history));
+                        // **SUCCESS NOTIFICATION:** Use SweetAlert2 for success
+                        showAlert(`คำสั่งซื้อ #${orderId} ถูกยกเลิกแล้ว`, 'success'); 
+                        renderOrderHistory(); 
+                    } else {
+                        // **ERROR NOTIFICATION:** Use SweetAlert2 for error
+                        showAlert(`คำสั่งซื้อ #${orderId} ไม่สามารถยกเลิกได้ เนื่องจากสถานะเป็น: ${history[orderIndex].status}`, 'warning');
+                    }
+                } else {
+                    // **ERROR NOTIFICATION:** Use SweetAlert2 for error
+                    showAlert(`ไม่พบคำสั่งซื้อ #${orderId}`, 'warning');
+                }
+            });
+        }
+        
+        /**
+         * Logic to clear all history (uses new showAlert/SweetAlert2).
+         * **MODIFIED:** Added check for "รอการตรวจสอบ" status.
+         */
+        function clearAllHistory() {
+            const history = JSON.parse(localStorage.getItem('orderHistory')) || [];
+            
+            // Check for any pending orders ("รอการตรวจสอบ")
+            const hasPendingOrders = history.some(order => order.status === "รอการตรวจสอบ");
+
+            if (hasPendingOrders) {
+                // If pending orders exist, show a warning and stop
+                showAlert('ไม่สามารถล้างประวัติการสั่งซื้อได้ เนื่องจากยังมีคำสั่งซื้อที่ "รอการตรวจสอบ" กรุณายกเลิกหรือรอการดำเนินการให้เสร็จสิ้นก่อน', 'warning');
+                return;
+            }
+
+            // If no pending orders, proceed with confirmation and clearing
+            showAlert('คุณแน่ใจหรือไม่ที่จะล้างประวัติการสั่งซื้อทั้งหมด? การดำเนินการนี้ไม่สามารถย้อนกลับได้!', 'confirm', () => {
+                localStorage.removeItem('orderHistory');
+                // **SUCCESS NOTIFICATION:** Use SweetAlert2 for success
+                showAlert('ประวัติการสั่งซื้อทั้งหมดถูกล้างแล้ว!', 'success');
+                renderOrderHistory(); 
+            });
+        }
+
+
+        // Initialization
+        document.addEventListener('DOMContentLoaded', () => {
+            // Expose functions globally for HTML attributes
+            window.cancelOrder = cancelOrder; 
+            window.clearAllHistory = clearAllHistory; 
+            window.showOrderDetails = showOrderDetails;
+            window.closeModal = closeModal;
+            window.showAlert = showAlert; // Ensure new showAlert is available
+
+            renderOrderHistory(); 
+        });
+
+    </script>
+</body>
+</html>
